@@ -27,8 +27,8 @@ def cellLoc(VIN):
             ",[Province]"
             ",[Country]"
             ",[Hour]"
-            # ",[Rank] FROM [KIS Data].[dbo].[Engine_Location_Agg] WHERE [LastUpdate] = '" + datequeryStr + "' AND [EquipmentName] = '" + VIN + "'"
-            ",[Rank] FROM [KIS Data].[dbo].[Engine_Location_Agg] WHERE [LastUpdate] = '2023-02-13' AND [EquipmentName] = '" + VIN + "'"
+            ",[Rank] FROM [KIS Data].[dbo].[Engine_Location_Agg] WHERE [LastUpdate] = '" + datequeryStr + "' AND [EquipmentName] = '" + VIN + "'"
+            # ",[Rank] FROM [KIS Data].[dbo].[Engine_Location_Agg] WHERE [LastUpdate] = '2023-02-13' AND [EquipmentName] = '" + VIN + "'"
             " AND [SubDistrict] <> '' AND [District] <> '' AND [Province] <> '' AND [Country] <> '' AND [Hour] > 0"
             )
     resultsetloc = conn.execute(query)
@@ -70,8 +70,8 @@ def main():
                 ",[Province]"
                 ",[Country]"
                 ",[Hour]"
-                # ",[Rank] FROM [KIS Data].[dbo].[Engine_Location_Agg] WHERE [LastUpdate] = '" + datequeryStr + "'"
-                ",[Rank] FROM [KIS Data].[dbo].[Engine_Location_Agg] WHERE [LastUpdate] = '2023-02-13'"
+                ",[Rank] FROM [KIS Data].[dbo].[Engine_Location_Agg] WHERE [LastUpdate] = '" + datequeryStr + "'"
+                # ",[Rank] FROM [KIS Data].[dbo].[Engine_Location_Agg] WHERE [LastUpdate] = '2023-02-13'"
                 " AND [SubDistrict] <> '' AND [District] <> '' AND [Province] <> '' AND [Country] <> '' AND [Hour] > 0"
                 " AND [Rank] = 1"
                 )
