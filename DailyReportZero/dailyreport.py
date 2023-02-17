@@ -89,6 +89,15 @@ def main():
     df1 = pd.DataFrame(results_as_dict)
     dfFinal = df.merge(df1, left_on='EquipmentName', right_on='VIN')
     for index, row in dfFinal.iterrows():
+        ProductType = i['Product Type']
+        if ProductType == 'TRACTOR':
+            ProductType = 'รถแทรกเตอร์'
+        elif ProductType == 'MINI EXCAVATOR':
+            ProductType = 'รถขุด'
+        elif ProductType == 'RICE TRANSPLANTER':
+            ProductType = 'รถดำนา'
+        elif ProductType == 'COMBINE HARVESTER':
+            ProductType = 'รถเกี่ยวนวดข้าว'
         url = 'https://api.line.me/v2/bot/message/push'
         headers = {'content-type': 'application/json','Authorization':'Bearer J9o+1YH2mYc/4RiFFOjgXTYqCIxT//ctqWgLjB4kyYlw8qaieSnNl42uyn/TMfk7PuWAe9S8hyL5JDIA00Vfr24Ltdq+97ds4BNk4htsAIRkiDDAVQ0PKiz2wreUTFBG4Vpv+hDtLSk1QAnu2V2pOwdB04t89/1O/w1cDnyilFU='}
         body = {
@@ -140,7 +149,7 @@ def main():
                     },
                     {
                         "type": "text",
-                        "text": row['Product Type'],
+                        "text": ProductType,
                         "wrap": True,
                         "color": "#666666",
                         "size": "sm",
