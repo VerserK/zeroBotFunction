@@ -56,6 +56,7 @@ def run():
                 ProductType = 'รถดำนา'
             elif ProductType == 'COMBINE HARVESTER':
                 ProductType = 'รถเกี่ยวนวดข้าว'
+            nextservicedate = thai_strftime(row['Next Service Date'],"%d-%m-%Y")
             url = 'https://api.line.me/v2/bot/message/push'
             headers = {'content-type': 'application/json','Authorization':'Bearer J9o+1YH2mYc/4RiFFOjgXTYqCIxT//ctqWgLjB4kyYlw8qaieSnNl42uyn/TMfk7PuWAe9S8hyL5JDIA00Vfr24Ltdq+97ds4BNk4htsAIRkiDDAVQ0PKiz2wreUTFBG4Vpv+hDtLSk1QAnu2V2pOwdB04t89/1O/w1cDnyilFU='}
             body = {
@@ -187,7 +188,7 @@ def run():
                                         },
                                         {
                                             "type": "text",
-                                            "text": str(row['Next Service Date']),
+                                            "text": nextservicedate,
                                             "flex": 5,
                                             "color": "#666666",
                                             "size": "sm",
@@ -232,3 +233,4 @@ def run():
                 ]
             }
             r = requests.post(url, headers=headers, json=body)
+run()
