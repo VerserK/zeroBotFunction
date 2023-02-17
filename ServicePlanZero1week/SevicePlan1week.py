@@ -232,4 +232,3 @@ def run():
                 ]
             }
             r = requests.post(url, headers=headers, json=body)
-run()
