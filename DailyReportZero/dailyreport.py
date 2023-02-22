@@ -71,7 +71,7 @@ def main():
                 ",[Country]"
                 ",[Hour]"
                 ",[Rank] FROM [KIS Data].[dbo].[Engine_Location_Agg] WHERE [LastUpdate] = '" + datequeryStr + "'"
-                # ",[Rank] FROM [KIS Data].[dbo].[Engine_Location_Agg] WHERE [LastUpdate] = '2023-02-13'"
+                # ",[Rank] FROM [KIS Data].[dbo].[Engine_Location_Agg] WHERE [LastUpdate] = '2023-02-21'"
                 " AND [SubDistrict] <> '' AND [District] <> '' AND [Province] <> '' AND [Country] <> '' AND [Hour] > 0"
                 " AND [Rank] = 1"
                 )
@@ -88,6 +88,7 @@ def main():
     results_as_dict = resultset.mappings().all()
     df1 = pd.DataFrame(results_as_dict)
     dfFinal = df.merge(df1, left_on='EquipmentName', right_on='VIN')
+    dfFinal = dfFinal.sort_values(by=['UserId'])
     for index, row in dfFinal.iterrows():
         ProductType = row['Product Type']
         if ProductType == 'TRACTOR':
