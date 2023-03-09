@@ -5,6 +5,74 @@ import sqlalchemy as sa
 import urllib
 import pandas as pd
 
+def callRow(sparepart,quantity):
+    callRow = {
+                "type": "box",
+                "layout": "horizontal",
+                "contents": [
+                {
+                    "type": "text",
+                    "text": sparepart,
+                    "size": "sm",
+                    "color": "#555555",
+                    "flex": 0
+                },
+                {
+                    "type": "text",
+                    "text": quantity,
+                    "size": "sm",
+                    "color": "#111111",
+                    "align": "end"
+                }
+                ]
+            },
+    return callRow
+
+def callTemplate(QRYADD):
+    callTemplate= {
+        "type": "box",
+        "layout": "horizontal",
+        "contents": [
+        {
+            "type": "text",
+            "text": "ชื่ออะไหล่",
+            "size": "md",
+            "color": "#111111",
+            "flex": 0,
+            "weight": "bold"
+        },
+        {
+            "type": "text",
+            "text": "จำนวน",
+            "size": "md",
+            "color": "#111111",
+            "align": "end",
+            "weight": "bold"
+        }
+        ]
+    },
+    QRYADD
+    {
+        "type": "separator",
+        "margin": "xxl"
+    }
+    return callTemplate()
+
+def unique(list1):
+ 
+    # initialize a null list
+    unique_list = []
+    i = []
+    # traverse for all elements
+    for x in list1:
+        # check if exists in unique_list or not
+        if x not in unique_list:
+            unique_list.append(x)
+    # print list
+    for x in unique_list:
+        i.append(x)
+    return i
+
 def run():
     datetime_obj = datetime.datetime.now()
     timedel = datetime.timedelta(days=7)
@@ -229,6 +297,268 @@ def run():
                                 ]
                             }
                             }
+                    }
+                ]
+            }
+            r = requests.post(url, headers=headers, json=body)
+
+            if i['Product Type'] == 'TRACTOR':
+                laborvalue = row['Labor Value Main Type']
+                laborvalue = laborvalue.split(' ')
+                lv = ''.join(laborvalue[0])
+                master = [50,100,150,200,250,300,350,400,450,500,550,600,650,700,750,800,850,900,950,1000,1100,1200,1250,1300,1400,1500,1600,1700,1750,1800,1900,2000]
+                if row['Counter for Next Service'] in master:
+                    qry = sa.text("SELECT *"
+                        "FROM [ZEROSearchDB].[dbo].[Mt_Tractor]"
+                        "WHERE [สินค้า] = '"+ lv +"'"
+                        "AND (["+ str(row['Counter for Next Service']) + "] <> '0')"
+                    )
+                    resultsetCheck = conn.execute(qry)
+                    results_as_dict_Check = resultsetCheck.mappings().all()
+                    df3 = pd.DataFrame(results_as_dict_Check)
+                    qrydf3 = []
+                    for a,b in df3.iterrows():
+                        qrydf3.append(callRow(b['รายการอะไหล่ที่เปลี่ยน'],b['จำนวนชิ้น ']))
+                else:
+                    NextService = row['Counter for Next Service']
+                    oper = []
+                    qry = sa.text("SELECT *"
+                        "FROM [ZEROSearchDB].[dbo].[Mt_Tractor]"
+                        "WHERE [สินค้า] = '"+ lv +"'"
+                    )
+                    resultsetCheck = conn.execute(qry)
+                    results_as_dict_Check = resultsetCheck.mappings().all()
+                    df4 = pd.DataFrame(results_as_dict_Check)
+                    oper = df4['ชั่วโมงต่อไป'].str.strip('.ทุกชม ปี')
+                    out = oper.to_numpy().tolist()
+                    newOut = unique(out)
+                    newOut.remove(None)
+                    newOut.remove('2')
+                    qrydf3 = []
+                    for i in newOut:
+                        conditionService = NextService % int(i)
+                        if conditionService == 0:
+                            qry = sa.text("SELECT *"
+                                "FROM [ZEROSearchDB].[dbo].[Mt_Tractor]"
+                                "WHERE [สินค้า] = '"+ lv +"'"
+                                "AND (["+ i + "] <> '0')"
+                            )
+                            resultsetCheck = conn.execute(qry)
+                            results_as_dict_Check = resultsetCheck.mappings().all()
+                            df3 = pd.DataFrame(results_as_dict_Check)
+                            for a,b in df3.iterrows():
+                                qrydf3.append(callRow(b['รายการอะไหล่ที่เปลี่ยน'],b['จำนวนชิ้น ']))
+                                qrydf3 = unique(qrydf3)
+            elif i['Product Type'] == 'MINI EXCAVATOR':
+                laborvalue = row['Labor Value Main Type']
+                laborvalue = laborvalue.split(' ')
+                lv = ''.join(laborvalue[0])
+                master = [50,100,250,500,750,1000,1250,1500,1750,2000]
+                if row['Counter for Next Service'] in master:
+                    qry = sa.text("SELECT *"
+                        "FROM [ZEROSearchDB].[dbo].[Mt_Excavator]"
+                        "WHERE [สินค้า] = '"+ lv +"'"
+                        "AND (["+ str(row['Counter for Next Service']) + "] <> '0')"
+                    )
+                    resultsetCheck = conn.execute(qry)
+                    results_as_dict_Check = resultsetCheck.mappings().all()
+                    df3 = pd.DataFrame(results_as_dict_Check)
+                    qrydf3 = []
+                    for a,b in df3.iterrows():
+                        qrydf3.append(callRow(b['รายการอะไหล่ที่เปลี่ยน'],b['จำนวนชิ้น ']))
+                else:
+                    NextService = row['Counter for Next Service']
+                    oper = []
+                    qry = sa.text("SELECT *"
+                        "FROM [ZEROSearchDB].[dbo].[Mt_Excavator]"
+                        "WHERE [สินค้า] = '"+ lv +"'"
+                    )
+                    resultsetCheck = conn.execute(qry)
+                    results_as_dict_Check = resultsetCheck.mappings().all()
+                    df4 = pd.DataFrame(results_as_dict_Check)
+                    oper = df4['ชั่วโมงต่อไป'].str.strip('.ทุกชม ปีๆชั่วโมง')
+                    out = oper.to_numpy().tolist()
+                    newOut = unique(out)
+                    newOut.remove(None)
+                    newOut.remove('2')
+                    qrydf3 = []
+                    for i in newOut:
+                        if i == 20002:
+                            i = 2000
+                            conditionService = NextService % int(i)
+                            if conditionService == 0:
+                                qry = sa.text("SELECT *"
+                                    "FROM [ZEROSearchDB].[dbo].[Mt_Excavator]"
+                                    "WHERE [สินค้า] = '"+ lv +"'"
+                                    "AND (["+ i + "] <> '0')"
+                                )
+                                resultsetCheck = conn.execute(qry)
+                                results_as_dict_Check = resultsetCheck.mappings().all()
+                                df3 = pd.DataFrame(results_as_dict_Check)
+                                for a,b in df3.iterrows():
+                                    qrydf3.append(callRow(b['รายการอะไหล่ที่เปลี่ยน'],b['จำนวนชิ้น ']))
+                                    qrydf3 = unique(qrydf3)
+                        else:
+                            conditionService = NextService % int(i)
+                            if conditionService == 0:
+                                qry = sa.text("SELECT *"
+                                    "FROM [ZEROSearchDB].[dbo].[Mt_Excavator]"
+                                    "WHERE [สินค้า] = '"+ lv +"'"
+                                    "AND (["+ i + "] <> '0')"
+                                )
+                                resultsetCheck = conn.execute(qry)
+                                results_as_dict_Check = resultsetCheck.mappings().all()
+                                df3 = pd.DataFrame(results_as_dict_Check)
+                                for a,b in df3.iterrows():
+                                    qrydf3.append(callRow(b['รายการอะไหล่ที่เปลี่ยน'],b['จำนวนชิ้น ']))
+                                    qrydf3 = unique(qrydf3)
+            elif i['Product Type'] == 'RICE TRANSPLANTER':
+                ProductType = 'รถดำนา'
+            elif i['Product Type'] == 'COMBINE HARVESTER':
+                laborvalue = row['Labor Value Main Type']
+                laborvalue = laborvalue.split(' ')
+                lv = ''.join(laborvalue[0])
+                master = [50,100,150,200,250,300,350,400,450,500,550,600,650,700,750,800,900,950,1000,1050,1100,1150,1200,1250,1300,1350,1400,1450,1500,1550,1600,1650,1700,1750,1800,1850,1900,1950,2000]
+                if row['Counter for Next Service'] in master:
+                    qry = sa.text("SELECT *"
+                        "FROM [ZEROSearchDB].[dbo].[Mt_Combine]"
+                        "WHERE [สินค้า] = '"+ lv +"'"
+                        "AND (["+ str(row['Counter for Next Service']) + "] <> '0')"
+                    )
+                    resultsetCheck = conn.execute(qry)
+                    results_as_dict_Check = resultsetCheck.mappings().all()
+                    df3 = pd.DataFrame(results_as_dict_Check)
+                    qrydf3 = []
+                    for a,b in df3.iterrows():
+                        qrydf3.append(callRow(b['รายการอะไหล่ที่เปลี่ยน'],b['จำนวนชิ้น ']))
+                else:
+                    NextService = row['Counter for Next Service']
+                    oper = []
+                    qry = sa.text("SELECT *"
+                        "FROM [ZEROSearchDB].[dbo].[Mt_Combine]"
+                        "WHERE [สินค้า] = '"+ lv +"'"
+                    )
+                    resultsetCheck = conn.execute(qry)
+                    results_as_dict_Check = resultsetCheck.mappings().all()
+                    df4 = pd.DataFrame(results_as_dict_Check)
+                    oper = df4['ชั่วโมงต่อไป'].str.strip('.ทุกชม ปีๆชั่วโมง')
+                    out = oper.to_numpy().tolist()
+                    newOut = unique(out)
+                    newOut.remove(None)
+                    newOut.remove('2')
+                    qrydf3 = []
+                    for i in newOut:
+                        if i == 8002:
+                            i = 800
+                            conditionService = NextService % int(i)
+                            if conditionService == 0:
+                                qry = sa.text("SELECT *"
+                                    "FROM [ZEROSearchDB].[dbo].[Mt_Combine]"
+                                    "WHERE [สินค้า] = '"+ lv +"'"
+                                    "AND (["+ i + "] <> '0')"
+                                )
+                                resultsetCheck = conn.execute(qry)
+                                results_as_dict_Check = resultsetCheck.mappings().all()
+                                df3 = pd.DataFrame(results_as_dict_Check)
+                                for a,b in df3.iterrows():
+                                    qrydf3.append(callRow(b['รายการอะไหล่ที่เปลี่ยน'],b['จำนวนชิ้น ']))
+                                    qrydf3 = unique(qrydf3)
+                        else:
+                            conditionService = NextService % int(i)
+                            if conditionService == 0:
+                                qry = sa.text("SELECT *"
+                                    "FROM [ZEROSearchDB].[dbo].[Mt_Combine]"
+                                    "WHERE [สินค้า] = '"+ lv +"'"
+                                    "AND (["+ i + "] <> '0')"
+                                )
+                                resultsetCheck = conn.execute(qry)
+                                results_as_dict_Check = resultsetCheck.mappings().all()
+                                df3 = pd.DataFrame(results_as_dict_Check)
+                                for a,b in df3.iterrows():
+                                    qrydf3.append(callRow(b['รายการอะไหล่ที่เปลี่ยน'],b['จำนวนชิ้น ']))
+                                    qrydf3 = unique(qrydf3)
+
+            url = 'https://api.line.me/v2/bot/message/push'
+            headers = {'content-type': 'application/json','Authorization':'Bearer J9o+1YH2mYc/4RiFFOjgXTYqCIxT//ctqWgLjB4kyYlw8qaieSnNl42uyn/TMfk7PuWAe9S8hyL5JDIA00Vfr24Ltdq+97ds4BNk4htsAIRkiDDAVQ0PKiz2wreUTFBG4Vpv+hDtLSk1QAnu2V2pOwdB04t89/1O/w1cDnyilFU='}
+            body = {
+                "to": i['UserId'],
+                "messages": [
+                    {
+                        "type": "flex",
+                        "altText": "Service Plan Report",
+                        "contents": {
+                                "type": "bubble",
+                                "body": {
+                                    "type": "box",
+                                    "layout": "vertical",
+                                    "contents": [
+                                    {
+                                        "type": "text",
+                                        "text": "รายการอะไหล่ที่ต้องเปลี่ยน",
+                                        "weight": "bold",
+                                        "color": "#1DB446",
+                                        "size": "lg"
+                                    },
+                                    {
+                                        "type": "separator",
+                                        "margin": "xxl"
+                                    },
+                                    {
+                                        "type": "box",
+                                        "layout": "vertical",
+                                        "contents": [
+                                        {
+                                            "type": "box",
+                                            "layout": "horizontal",
+                                            "contents": [
+                                            {
+                                                "type": "text",
+                                                "text": "รายการอะไหล่",
+                                                "flex": 0,
+                                                "weight": "bold",
+                                                "size": "sm"
+                                            },
+                                            {
+                                                "type": "text",
+                                                "text": "จำนวน",
+                                                "weight": "bold",
+                                                "size": "sm",
+                                                "align": "end"
+                                            }
+                                            ]
+                                        }
+                                        ],
+                                        "spacing": "sm",
+                                        "margin": "xxl"
+                                    },
+                                    {
+                                        "type": "box",
+                                        "layout": "vertical",
+                                        "margin": "xxl",
+                                        "spacing": "sm",
+                                        "contents": qrydf3
+                                    },
+                                    {
+                                        "type": "separator",
+                                        "margin": "xxl"
+                                    },
+                                    {
+                                        "type": "button",
+                                        "action": {
+                                        "type": "uri",
+                                        "label": "ตรวจเช็คราคาอะไหล่",
+                                        "uri": "https://store.kasetinno.com/"
+                                        },
+                                        "style": "primary"
+                                    }
+                                    ]
+                                },
+                                "styles": {
+                                    "footer": {
+                                    "separator": True
+                                    }
+                                }
+                                }
                     }
                 ]
             }
