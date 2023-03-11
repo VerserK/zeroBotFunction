@@ -15,7 +15,8 @@ def callRow(sparepart,quantity):
                     "text": sparepart,
                     "size": "sm",
                     "color": "#555555",
-                    "flex": 0
+                    "flex": 0,
+                    "wrap": True
                 },
                 {
                     "type": "text",
