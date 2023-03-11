@@ -28,35 +28,93 @@ def callRow(sparepart,quantity):
             },
     return callRow
 
-def callTemplate(QRYADD):
-    callTemplate= {
-        "type": "box",
-        "layout": "horizontal",
-        "contents": [
-        {
-            "type": "text",
-            "text": "ชื่ออะไหล่",
-            "size": "md",
-            "color": "#111111",
-            "flex": 0,
-            "weight": "bold"
-        },
-        {
-            "type": "text",
-            "text": "จำนวน",
-            "size": "md",
-            "color": "#111111",
-            "align": "end",
-            "weight": "bold"
-        }
+def sendApi(UID,Data):
+    url = 'https://api.line.me/v2/bot/message/push'
+    headers = {'content-type': 'application/json','Authorization':'Bearer J9o+1YH2mYc/4RiFFOjgXTYqCIxT//ctqWgLjB4kyYlw8qaieSnNl42uyn/TMfk7PuWAe9S8hyL5JDIA00Vfr24Ltdq+97ds4BNk4htsAIRkiDDAVQ0PKiz2wreUTFBG4Vpv+hDtLSk1QAnu2V2pOwdB04t89/1O/w1cDnyilFU='}
+    body = {
+        "to": UID,
+        # "to": "U97caf21a53b92919005e158b429c8c2b",
+        "messages": [
+            {
+                "type": "flex",
+                "altText": "Service Plan Report",
+                "contents": {
+                        "type": "bubble",
+                        "body": {
+                            "type": "box",
+                            "layout": "vertical",
+                            "contents": [
+                            {
+                                "type": "text",
+                                "text": "รายการอะไหล่ที่ต้องเปลี่ยน",
+                                "weight": "bold",
+                                "color": "#1DB446",
+                                "size": "lg"
+                            },
+                            {
+                                "type": "separator",
+                                "margin": "xxl"
+                            },
+                            {
+                                "type": "box",
+                                "layout": "vertical",
+                                "contents": [
+                                {
+                                    "type": "box",
+                                    "layout": "horizontal",
+                                    "contents": [
+                                    {
+                                        "type": "text",
+                                        "text": "รายการอะไหล่",
+                                        "flex": 0,
+                                        "weight": "bold",
+                                        "size": "sm"
+                                    },
+                                    {
+                                        "type": "text",
+                                        "text": "จำนวน",
+                                        "weight": "bold",
+                                        "size": "sm",
+                                        "align": "end"
+                                    }
+                                    ]
+                                }
+                                ],
+                                "spacing": "sm",
+                                "margin": "xxl"
+                            },
+                            {
+                                "type": "box",
+                                "layout": "vertical",
+                                "margin": "xxl",
+                                "spacing": "sm",
+                                "contents": Data
+                            },
+                            {
+                                "type": "separator",
+                                "margin": "xxl"
+                            },
+                            {
+                                "type": "button",
+                                "action": {
+                                "type": "uri",
+                                "label": "ตรวจเช็คราคาอะไหล่",
+                                "uri": "https://store.kasetinno.com/"
+                                },
+                                "style": "primary"
+                            }
+                            ]
+                        },
+                        "styles": {
+                            "footer": {
+                            "separator": True
+                            }
+                        }
+                        }
+            }
         ]
-    },
-    QRYADD
-    {
-        "type": "separator",
-        "margin": "xxl"
     }
-    return callTemplate()
+    r = requests.post(url, headers=headers, json=body)
 
 def unique(list1):
  
@@ -308,9 +366,10 @@ def run():
                 lv = ''.join(laborvalue[0])
                 master = [50,100,150,200,250,300,350,400,450,500,550,600,650,700,750,800,850,900,950,1000,1100,1200,1250,1300,1400,1500,1600,1700,1750,1800,1900,2000]
                 if row['Counter for Next Service'] in master:
+                    print(row['Counter for Next Service'])
                     qry = sa.text("SELECT *"
                         "FROM [ZEROSearchDB].[dbo].[Mt_Tractor]"
-                        "WHERE [สินค้า] = '"+ lv +"'"
+                        "WHERE [สินค้า] LIKE '"+ lv[:5] +"%'"
                         "AND (["+ str(row['Counter for Next Service']) + "] <> '0')"
                     )
                     resultsetCheck = conn.execute(qry)
@@ -319,12 +378,14 @@ def run():
                     qrydf3 = []
                     for a,b in df3.iterrows():
                         qrydf3.append(callRow(b['รายการอะไหล่ที่เปลี่ยน'],b['จำนวนชิ้น ']))
+                    sendApi(i['UserId'],qrydf3)
                 else:
                     NextService = row['Counter for Next Service']
+                    print(NextService)
                     oper = []
                     qry = sa.text("SELECT *"
                         "FROM [ZEROSearchDB].[dbo].[Mt_Tractor]"
-                        "WHERE [สินค้า] = '"+ lv +"'"
+                        "WHERE [สินค้า] LIKE '"+ lv[:5] +"%'"
                     )
                     resultsetCheck = conn.execute(qry)
                     results_as_dict_Check = resultsetCheck.mappings().all()
@@ -334,13 +395,14 @@ def run():
                     newOut = unique(out)
                     newOut.remove(None)
                     newOut.remove('2')
+                    print(newOut)
                     qrydf3 = []
                     for i in newOut:
                         conditionService = NextService % int(i)
                         if conditionService == 0:
                             qry = sa.text("SELECT *"
                                 "FROM [ZEROSearchDB].[dbo].[Mt_Tractor]"
-                                "WHERE [สินค้า] = '"+ lv +"'"
+                                "WHERE [สินค้า] LIKE '"+ lv[:5] +"%'"
                                 "AND (["+ i + "] <> '0')"
                             )
                             resultsetCheck = conn.execute(qry)
@@ -349,6 +411,7 @@ def run():
                             for a,b in df3.iterrows():
                                 qrydf3.append(callRow(b['รายการอะไหล่ที่เปลี่ยน'],b['จำนวนชิ้น ']))
                                 qrydf3 = unique(qrydf3)
+                            sendApi(i['UserId'],qrydf3)
             elif i['Product Type'] == 'MINI EXCAVATOR':
                 laborvalue = row['Labor Value Main Type']
                 laborvalue = laborvalue.split(' ')
@@ -357,7 +420,7 @@ def run():
                 if row['Counter for Next Service'] in master:
                     qry = sa.text("SELECT *"
                         "FROM [ZEROSearchDB].[dbo].[Mt_Excavator]"
-                        "WHERE [สินค้า] = '"+ lv +"'"
+                        "WHERE [สินค้า] LIKE '"+ lv[:5] +"%'"
                         "AND (["+ str(row['Counter for Next Service']) + "] <> '0')"
                     )
                     resultsetCheck = conn.execute(qry)
@@ -365,13 +428,14 @@ def run():
                     df3 = pd.DataFrame(results_as_dict_Check)
                     qrydf3 = []
                     for a,b in df3.iterrows():
-                        qrydf3.append(callRow(b['รายการอะไหล่ที่เปลี่ยน'],b['จำนวนชิ้น ']))
+                        qrydf3.append(callRow(b['รายการอะไหล่'],b['จำนวนชิ้น']))
+                    sendApi(i['UserId'],qrydf3)
                 else:
                     NextService = row['Counter for Next Service']
                     oper = []
                     qry = sa.text("SELECT *"
                         "FROM [ZEROSearchDB].[dbo].[Mt_Excavator]"
-                        "WHERE [สินค้า] = '"+ lv +"'"
+                        "WHERE [สินค้า] LIKE '"+ lv[:5] +"%'"
                     )
                     resultsetCheck = conn.execute(qry)
                     results_as_dict_Check = resultsetCheck.mappings().all()
@@ -389,29 +453,31 @@ def run():
                             if conditionService == 0:
                                 qry = sa.text("SELECT *"
                                     "FROM [ZEROSearchDB].[dbo].[Mt_Excavator]"
-                                    "WHERE [สินค้า] = '"+ lv +"'"
+                                    "WHERE [สินค้า] LIKE '"+ lv[:5] +"%'"
                                     "AND (["+ i + "] <> '0')"
                                 )
                                 resultsetCheck = conn.execute(qry)
                                 results_as_dict_Check = resultsetCheck.mappings().all()
                                 df3 = pd.DataFrame(results_as_dict_Check)
                                 for a,b in df3.iterrows():
-                                    qrydf3.append(callRow(b['รายการอะไหล่ที่เปลี่ยน'],b['จำนวนชิ้น ']))
+                                    qrydf3.append(callRow(b['รายการอะไหล่'],b['จำนวนชิ้น']))
                                     qrydf3 = unique(qrydf3)
+                                sendApi(i['UserId'],qrydf3)
                         else:
                             conditionService = NextService % int(i)
                             if conditionService == 0:
                                 qry = sa.text("SELECT *"
                                     "FROM [ZEROSearchDB].[dbo].[Mt_Excavator]"
-                                    "WHERE [สินค้า] = '"+ lv +"'"
+                                    "WHERE [สินค้า] LIKE '"+ lv[:5] +"%'"
                                     "AND (["+ i + "] <> '0')"
                                 )
                                 resultsetCheck = conn.execute(qry)
                                 results_as_dict_Check = resultsetCheck.mappings().all()
                                 df3 = pd.DataFrame(results_as_dict_Check)
                                 for a,b in df3.iterrows():
-                                    qrydf3.append(callRow(b['รายการอะไหล่ที่เปลี่ยน'],b['จำนวนชิ้น ']))
+                                    qrydf3.append(callRow(b['รายการอะไหล่'],b['จำนวนชิ้น']))
                                     qrydf3 = unique(qrydf3)
+                                sendApi(i['UserId'],qrydf3)
             elif i['Product Type'] == 'RICE TRANSPLANTER':
                 ProductType = 'รถดำนา'
             elif i['Product Type'] == 'COMBINE HARVESTER':
@@ -422,7 +488,7 @@ def run():
                 if row['Counter for Next Service'] in master:
                     qry = sa.text("SELECT *"
                         "FROM [ZEROSearchDB].[dbo].[Mt_Combine]"
-                        "WHERE [สินค้า] = '"+ lv +"'"
+                        "WHERE [สินค้า] LIKE '"+ lv[:5] +"%'"
                         "AND (["+ str(row['Counter for Next Service']) + "] <> '0')"
                     )
                     resultsetCheck = conn.execute(qry)
@@ -431,12 +497,13 @@ def run():
                     qrydf3 = []
                     for a,b in df3.iterrows():
                         qrydf3.append(callRow(b['รายการอะไหล่ที่เปลี่ยน'],b['จำนวนชิ้น ']))
+                    sendApi(i['UserId'],qrydf3)
                 else:
                     NextService = row['Counter for Next Service']
                     oper = []
                     qry = sa.text("SELECT *"
                         "FROM [ZEROSearchDB].[dbo].[Mt_Combine]"
-                        "WHERE [สินค้า] = '"+ lv +"'"
+                        "WHERE [สินค้า] LIKE '"+ lv +"%'"
                     )
                     resultsetCheck = conn.execute(qry)
                     results_as_dict_Check = resultsetCheck.mappings().all()
@@ -454,7 +521,7 @@ def run():
                             if conditionService == 0:
                                 qry = sa.text("SELECT *"
                                     "FROM [ZEROSearchDB].[dbo].[Mt_Combine]"
-                                    "WHERE [สินค้า] = '"+ lv +"'"
+                                    "WHERE [สินค้า] LIKE '"+ lv +"%'"
                                     "AND (["+ i + "] <> '0')"
                                 )
                                 resultsetCheck = conn.execute(qry)
@@ -463,12 +530,13 @@ def run():
                                 for a,b in df3.iterrows():
                                     qrydf3.append(callRow(b['รายการอะไหล่ที่เปลี่ยน'],b['จำนวนชิ้น ']))
                                     qrydf3 = unique(qrydf3)
+                                sendApi(i['UserId'],qrydf3)
                         else:
                             conditionService = NextService % int(i)
                             if conditionService == 0:
                                 qry = sa.text("SELECT *"
                                     "FROM [ZEROSearchDB].[dbo].[Mt_Combine]"
-                                    "WHERE [สินค้า] = '"+ lv +"'"
+                                    "WHERE [สินค้า] LIKE '"+ lv +"%'"
                                     "AND (["+ i + "] <> '0')"
                                 )
                                 resultsetCheck = conn.execute(qry)
@@ -477,89 +545,4 @@ def run():
                                 for a,b in df3.iterrows():
                                     qrydf3.append(callRow(b['รายการอะไหล่ที่เปลี่ยน'],b['จำนวนชิ้น ']))
                                     qrydf3 = unique(qrydf3)
-
-            url = 'https://api.line.me/v2/bot/message/push'
-            headers = {'content-type': 'application/json','Authorization':'Bearer J9o+1YH2mYc/4RiFFOjgXTYqCIxT//ctqWgLjB4kyYlw8qaieSnNl42uyn/TMfk7PuWAe9S8hyL5JDIA00Vfr24Ltdq+97ds4BNk4htsAIRkiDDAVQ0PKiz2wreUTFBG4Vpv+hDtLSk1QAnu2V2pOwdB04t89/1O/w1cDnyilFU='}
-            body = {
-                "to": i['UserId'],
-                "messages": [
-                    {
-                        "type": "flex",
-                        "altText": "Service Plan Report",
-                        "contents": {
-                                "type": "bubble",
-                                "body": {
-                                    "type": "box",
-                                    "layout": "vertical",
-                                    "contents": [
-                                    {
-                                        "type": "text",
-                                        "text": "รายการอะไหล่ที่ต้องเปลี่ยน",
-                                        "weight": "bold",
-                                        "color": "#1DB446",
-                                        "size": "lg"
-                                    },
-                                    {
-                                        "type": "separator",
-                                        "margin": "xxl"
-                                    },
-                                    {
-                                        "type": "box",
-                                        "layout": "vertical",
-                                        "contents": [
-                                        {
-                                            "type": "box",
-                                            "layout": "horizontal",
-                                            "contents": [
-                                            {
-                                                "type": "text",
-                                                "text": "รายการอะไหล่",
-                                                "flex": 0,
-                                                "weight": "bold",
-                                                "size": "sm"
-                                            },
-                                            {
-                                                "type": "text",
-                                                "text": "จำนวน",
-                                                "weight": "bold",
-                                                "size": "sm",
-                                                "align": "end"
-                                            }
-                                            ]
-                                        }
-                                        ],
-                                        "spacing": "sm",
-                                        "margin": "xxl"
-                                    },
-                                    {
-                                        "type": "box",
-                                        "layout": "vertical",
-                                        "margin": "xxl",
-                                        "spacing": "sm",
-                                        "contents": qrydf3
-                                    },
-                                    {
-                                        "type": "separator",
-                                        "margin": "xxl"
-                                    },
-                                    {
-                                        "type": "button",
-                                        "action": {
-                                        "type": "uri",
-                                        "label": "ตรวจเช็คราคาอะไหล่",
-                                        "uri": "https://store.kasetinno.com/"
-                                        },
-                                        "style": "primary"
-                                    }
-                                    ]
-                                },
-                                "styles": {
-                                    "footer": {
-                                    "separator": True
-                                    }
-                                }
-                                }
-                    }
-                ]
-            }
-            r = requests.post(url, headers=headers, json=body)
+                                sendApi(i['UserId'],qrydf3)
