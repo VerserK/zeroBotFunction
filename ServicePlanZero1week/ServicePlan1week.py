@@ -480,7 +480,23 @@ def run():
                                     qrydf3 = unique(qrydf3)
                                 sendApi(i['UserId'],qrydf3)
             elif i['Product Type'] == 'RICE TRANSPLANTER':
-                ProductType = 'รถดำนา'
+                laborvalue = row['Labor Value Main Type']
+                laborvalue = laborvalue.split(' ')
+                lv = ''.join(laborvalue[0])
+                master = [50,100,150,200]
+                if row['Counter for Next Service'] in master:
+                    qry = sa.text("SELECT *"
+                        "FROM [ZEROSearchDB].[dbo].[Mt_Combine]"
+                        "WHERE [สินค้า] LIKE '"+ lv +"'"
+                        "AND (["+ str(row['Counter for Next Service']) + "] <> '0')"
+                    )
+                    resultsetCheck = conn.execute(qry)
+                    results_as_dict_Check = resultsetCheck.mappings().all()
+                    df3 = pd.DataFrame(results_as_dict_Check)
+                    qrydf3 = []
+                    for a,b in df3.iterrows():
+                        qrydf3.append(callRow(b['รายการอะไหล่ที่เปลี่ยน'],b['จำนวนชิ้น ']))
+                    sendApi(i['UserId'],qrydf3)
             elif i['Product Type'] == 'COMBINE HARVESTER':
                 laborvalue = row['Labor Value Main Type']
                 laborvalue = laborvalue.split(' ')
