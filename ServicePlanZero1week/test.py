@@ -75,12 +75,12 @@ def unique(list1):
         i.append(x)
     return i
 
-def sendApi(Data):
+def sendApi(UID,Data):
     url = 'https://api.line.me/v2/bot/message/push'
     headers = {'content-type': 'application/json','Authorization':'Bearer J9o+1YH2mYc/4RiFFOjgXTYqCIxT//ctqWgLjB4kyYlw8qaieSnNl42uyn/TMfk7PuWAe9S8hyL5JDIA00Vfr24Ltdq+97ds4BNk4htsAIRkiDDAVQ0PKiz2wreUTFBG4Vpv+hDtLSk1QAnu2V2pOwdB04t89/1O/w1cDnyilFU='}
     body = {
-        # "to": i['UserId'],
-        "to": "U97caf21a53b92919005e158b429c8c2b",
+        "to": UID,
+        # "to": "U97caf21a53b92919005e158b429c8c2b",
         "messages": [
             {
                 "type": "flex",
@@ -193,7 +193,7 @@ query = sa.text("SELECT"
                 ",[Labor Value Main Type]"
             "FROM [ZEROSearchDB].[dbo].[Service_Plan]" 
             # "WHERE [Next Service Date] = '" + datequeryStr + "'"
-            "WHERE [Next Service Date] = '2024-06-22'"
+            "WHERE [Next Service Date] = '2023-03-22'"
         )
 resultsetloc = conn.execute(query)
 results_as_dict_loc = resultsetloc.mappings().all()
@@ -210,6 +210,7 @@ for index, row in df.iterrows():
     results_as_dict_Check = resultsetCheck.mappings().all()
     df1 = pd.DataFrame(results_as_dict_Check)
     for x,i in df1.iterrows():
+        UID = 'U97caf21a53b92919005e158b429c8c2b'
         if i['Product Type'] == 'TRACTOR':
             laborvalue = row['Labor Value Main Type']
             laborvalue = laborvalue.split(' ')
@@ -228,7 +229,7 @@ for index, row in df.iterrows():
                 qrydf3 = []
                 for a,b in df3.iterrows():
                     qrydf3.append(callRow(b['รายการอะไหล่ที่เปลี่ยน'],b['จำนวนชิ้น ']))
-                sendApi(qrydf3)
+                sendApi(UID,qrydf3)
             else:
                 NextService = row['Counter for Next Service']
                 print(NextService)
@@ -261,7 +262,7 @@ for index, row in df.iterrows():
                         for a,b in df3.iterrows():
                             qrydf3.append(callRow(b['รายการอะไหล่ที่เปลี่ยน'],b['จำนวนชิ้น ']))
                             qrydf3 = unique(qrydf3)
-                        sendApi(qrydf3)
+                        sendApi(UID,qrydf3)
         elif i['Product Type'] == 'MINI EXCAVATOR':
             laborvalue = row['Labor Value Main Type']
             laborvalue = laborvalue.split(' ')
@@ -279,7 +280,8 @@ for index, row in df.iterrows():
                 qrydf3 = []
                 for a,b in df3.iterrows():
                     qrydf3.append(callRow(b['รายการอะไหล่'],b['จำนวนชิ้น']))
-                sendApi(qrydf3)
+                print(qrydf3)
+                sendApi(UID,qrydf3)
             else:
                 NextService = row['Counter for Next Service']
                 oper = []
@@ -312,7 +314,7 @@ for index, row in df.iterrows():
                             for a,b in df3.iterrows():
                                 qrydf3.append(callRow(b['รายการอะไหล่'],b['จำนวนชิ้น']))
                                 qrydf3 = unique(qrydf3)
-                            sendApi(qrydf3)
+                            sendApi(UID,qrydf3)
                     else:
                         conditionService = NextService % int(i)
                         if conditionService == 0:
@@ -327,7 +329,7 @@ for index, row in df.iterrows():
                             for a,b in df3.iterrows():
                                 qrydf3.append(callRow(b['รายการอะไหล่'],b['จำนวนชิ้น']))
                                 qrydf3 = unique(qrydf3)
-                            sendApi(qrydf3)
+                            sendApi(UID,qrydf3)
         elif i['Product Type'] == 'RICE TRANSPLANTER':
             ProductType = 'รถดำนา'
         elif i['Product Type'] == 'COMBINE HARVESTER':
@@ -347,7 +349,7 @@ for index, row in df.iterrows():
                 qrydf3 = []
                 for a,b in df3.iterrows():
                     qrydf3.append(callRow(b['รายการอะไหล่ที่เปลี่ยน'],b['จำนวนชิ้น ']))
-                sendApi(qrydf3)
+                sendApi(UID,qrydf3)
             else:
                 NextService = row['Counter for Next Service']
                 oper = []
@@ -380,7 +382,7 @@ for index, row in df.iterrows():
                             for a,b in df3.iterrows():
                                 qrydf3.append(callRow(b['รายการอะไหล่ที่เปลี่ยน'],b['จำนวนชิ้น ']))
                                 qrydf3 = unique(qrydf3)
-                            sendApi(qrydf3)
+                            sendApi(UID,qrydf3)
                     else:
                         conditionService = NextService % int(i)
                         if conditionService == 0:
@@ -395,4 +397,4 @@ for index, row in df.iterrows():
                             for a,b in df3.iterrows():
                                 qrydf3.append(callRow(b['รายการอะไหล่ที่เปลี่ยน'],b['จำนวนชิ้น ']))
                                 qrydf3 = unique(qrydf3)
-                            sendApi(qrydf3)
+                            sendApi(UID,qrydf3)

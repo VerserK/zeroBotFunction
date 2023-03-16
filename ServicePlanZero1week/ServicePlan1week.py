@@ -12,7 +12,7 @@ def callRow(sparepart,quantity):
                 "contents": [
                 {
                     "type": "text",
-                    "text": sparepart,
+                    "text": str(sparepart),
                     "size": "sm",
                     "color": "#555555",
                     "flex": 5,
@@ -20,13 +20,13 @@ def callRow(sparepart,quantity):
                 },
                 {
                     "type": "text",
-                    "text": quantity,
+                    "text": str(quantity),
                     "size": "sm",
                     "color": "#111111",
                     "align": "end"
                 }
                 ]
-            },
+            }
     return callRow
 
 def sendApi(UID,Data):
@@ -116,6 +116,7 @@ def sendApi(UID,Data):
         ]
     }
     r = requests.post(url, headers=headers, json=body)
+    return r
 
 def unique(list1):
  
@@ -155,7 +156,8 @@ def run():
                     ",[Vehicle Identification Number (Vehicle Identification No.)]"
                     ",[Labor Value Main Type]"
                 "FROM [ZEROSearchDB].[dbo].[Service_Plan]" 
-                "WHERE [Next Service Date] = '" + datequeryStr + "'"
+                # "WHERE [Next Service Date] = '" + datequeryStr + "'"
+                "WHERE [Next Service Date] = '2023-03-22'"
             )
     resultsetloc = conn.execute(query)
     results_as_dict_loc = resultsetloc.mappings().all()
@@ -174,6 +176,7 @@ def run():
         df1 = pd.DataFrame(results_as_dict_Check)
 
         for x,i in df1.iterrows():
+            UID = i['UserId']
             ProductType = i['Product Type']
             if ProductType == 'TRACTOR':
                 ProductType = 'รถแทรกเตอร์'
@@ -361,7 +364,9 @@ def run():
             }
             r = requests.post(url, headers=headers, json=body)
 
+
             if i['Product Type'] == 'TRACTOR':
+                print('TRACTOR')
                 laborvalue = row['Labor Value Main Type']
                 laborvalue = laborvalue.split(' ')
                 lv = ''.join(laborvalue[0])
@@ -379,7 +384,7 @@ def run():
                     qrydf3 = []
                     for a,b in df3.iterrows():
                         qrydf3.append(callRow(b['รายการอะไหล่ที่เปลี่ยน'],b['จำนวนชิ้น ']))
-                    sendApi(i['UserId'],qrydf3)
+                    sendApi(UID,qrydf3)
                 else:
                     NextService = row['Counter for Next Service']
                     print(NextService)
@@ -398,13 +403,13 @@ def run():
                     newOut.remove('2')
                     print(newOut)
                     qrydf3 = []
-                    for i in newOut:
-                        conditionService = NextService % int(i)
+                    for m in newOut:
+                        conditionService = NextService % int(m)
                         if conditionService == 0:
                             qry = sa.text("SELECT *"
                                 "FROM [ZEROSearchDB].[dbo].[Mt_Tractor]"
                                 "WHERE [สินค้า] LIKE '"+ lv[:5] +"%'"
-                                "AND (["+ i + "] <> '0')"
+                                "AND (["+ m + "] <> '0')"
                             )
                             resultsetCheck = conn.execute(qry)
                             results_as_dict_Check = resultsetCheck.mappings().all()
@@ -412,11 +417,13 @@ def run():
                             for a,b in df3.iterrows():
                                 qrydf3.append(callRow(b['รายการอะไหล่ที่เปลี่ยน'],b['จำนวนชิ้น ']))
                                 qrydf3 = unique(qrydf3)
-                            sendApi(i['UserId'],qrydf3)
+                            sendApi(UID,qrydf3)
             elif i['Product Type'] == 'MINI EXCAVATOR':
+                print('MINI EXCAVATOR')
                 laborvalue = row['Labor Value Main Type']
                 laborvalue = laborvalue.split(' ')
                 lv = ''.join(laborvalue[0])
+                print(lv)
                 master = [50,100,250,500,750,1000,1250,1500,1750,2000]
                 if row['Counter for Next Service'] in master:
                     qry = sa.text("SELECT *"
@@ -430,7 +437,7 @@ def run():
                     qrydf3 = []
                     for a,b in df3.iterrows():
                         qrydf3.append(callRow(b['รายการอะไหล่'],b['จำนวนชิ้น']))
-                    sendApi(i['UserId'],qrydf3)
+                    sendApi(UID,qrydf3)
                 else:
                     NextService = row['Counter for Next Service']
                     oper = []
@@ -447,15 +454,15 @@ def run():
                     newOut.remove(None)
                     newOut.remove('2')
                     qrydf3 = []
-                    for i in newOut:
-                        if i == 20002:
-                            i = 2000
-                            conditionService = NextService % int(i)
+                    for m in newOut:
+                        if m == 20002:
+                            m = 2000
+                            conditionService = NextService % int(m)
                             if conditionService == 0:
                                 qry = sa.text("SELECT *"
                                     "FROM [ZEROSearchDB].[dbo].[Mt_Excavator]"
                                     "WHERE [สินค้า] LIKE '"+ lv[:5] +"%'"
-                                    "AND (["+ i + "] <> '0')"
+                                    "AND (["+ m + "] <> '0')"
                                 )
                                 resultsetCheck = conn.execute(qry)
                                 results_as_dict_Check = resultsetCheck.mappings().all()
@@ -463,14 +470,14 @@ def run():
                                 for a,b in df3.iterrows():
                                     qrydf3.append(callRow(b['รายการอะไหล่'],b['จำนวนชิ้น']))
                                     qrydf3 = unique(qrydf3)
-                                sendApi(i['UserId'],qrydf3)
+                                sendApi(UID,qrydf3)
                         else:
-                            conditionService = NextService % int(i)
+                            conditionService = NextService % int(m)
                             if conditionService == 0:
                                 qry = sa.text("SELECT *"
                                     "FROM [ZEROSearchDB].[dbo].[Mt_Excavator]"
                                     "WHERE [สินค้า] LIKE '"+ lv[:5] +"%'"
-                                    "AND (["+ i + "] <> '0')"
+                                    "AND (["+ m + "] <> '0')"
                                 )
                                 resultsetCheck = conn.execute(qry)
                                 results_as_dict_Check = resultsetCheck.mappings().all()
@@ -478,8 +485,9 @@ def run():
                                 for a,b in df3.iterrows():
                                     qrydf3.append(callRow(b['รายการอะไหล่'],b['จำนวนชิ้น']))
                                     qrydf3 = unique(qrydf3)
-                                sendApi(i['UserId'],qrydf3)
+                                sendApi(UID,qrydf3)
             elif i['Product Type'] == 'RICE TRANSPLANTER':
+                print('RICE TRANSPLANTER')
                 laborvalue = row['Labor Value Main Type']
                 laborvalue = laborvalue.split(' ')
                 lv = ''.join(laborvalue[0])
@@ -496,8 +504,9 @@ def run():
                     qrydf3 = []
                     for a,b in df3.iterrows():
                         qrydf3.append(callRow(b['รายการอะไหล่ที่เปลี่ยน'],b['จำนวนชิ้น ']))
-                    sendApi(i['UserId'],qrydf3)
+                    sendApi(UID,qrydf3)
             elif i['Product Type'] == 'COMBINE HARVESTER':
+                print('COMBINE HARVESTER')
                 laborvalue = row['Labor Value Main Type']
                 laborvalue = laborvalue.split(' ')
                 lv = ''.join(laborvalue[0])
@@ -514,7 +523,7 @@ def run():
                     qrydf3 = []
                     for a,b in df3.iterrows():
                         qrydf3.append(callRow(b['รายการอะไหล่ที่เปลี่ยน'],b['จำนวนชิ้น ']))
-                    sendApi(i['UserId'],qrydf3)
+                    sendApi(UID,qrydf3)
                 else:
                     NextService = row['Counter for Next Service']
                     oper = []
@@ -531,15 +540,15 @@ def run():
                     newOut.remove(None)
                     newOut.remove('2')
                     qrydf3 = []
-                    for i in newOut:
-                        if i == 8002:
-                            i = 800
-                            conditionService = NextService % int(i)
+                    for m in newOut:
+                        if m == 8002:
+                            m = 800
+                            conditionService = NextService % int(m)
                             if conditionService == 0:
                                 qry = sa.text("SELECT *"
                                     "FROM [ZEROSearchDB].[dbo].[Mt_Combine]"
                                     "WHERE [สินค้า] LIKE '"+ lv +"%'"
-                                    "AND (["+ i + "] <> '0')"
+                                    "AND (["+ m + "] <> '0')"
                                 )
                                 resultsetCheck = conn.execute(qry)
                                 results_as_dict_Check = resultsetCheck.mappings().all()
@@ -547,14 +556,14 @@ def run():
                                 for a,b in df3.iterrows():
                                     qrydf3.append(callRow(b['รายการอะไหล่ที่เปลี่ยน'],b['จำนวนชิ้น ']))
                                     qrydf3 = unique(qrydf3)
-                                sendApi(i['UserId'],qrydf3)
+                                sendApi(UID,qrydf3)
                         else:
-                            conditionService = NextService % int(i)
+                            conditionService = NextService % int(m)
                             if conditionService == 0:
                                 qry = sa.text("SELECT *"
                                     "FROM [ZEROSearchDB].[dbo].[Mt_Combine]"
                                     "WHERE [สินค้า] LIKE '"+ lv +"%'"
-                                    "AND (["+ i + "] <> '0')"
+                                    "AND (["+ m + "] <> '0')"
                                 )
                                 resultsetCheck = conn.execute(qry)
                                 results_as_dict_Check = resultsetCheck.mappings().all()
@@ -562,4 +571,6 @@ def run():
                                 for a,b in df3.iterrows():
                                     qrydf3.append(callRow(b['รายการอะไหล่ที่เปลี่ยน'],b['จำนวนชิ้น ']))
                                     qrydf3 = unique(qrydf3)
-                                sendApi(i['UserId'],qrydf3)
+                                sendApi(UID,qrydf3)
+
+run()
