@@ -156,8 +156,7 @@ def run():
                     ",[Vehicle Identification Number (Vehicle Identification No.)]"
                     ",[Labor Value Main Type]"
                 "FROM [ZEROSearchDB].[dbo].[Service_Plan]" 
-                # "WHERE [Next Service Date] = '" + datequeryStr + "'"
-                "WHERE [Next Service Date] = '2023-03-22'"
+                "WHERE [Next Service Date] = '" + datequeryStr + "'"
             )
     resultsetloc = conn.execute(query)
     results_as_dict_loc = resultsetloc.mappings().all()
