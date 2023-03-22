@@ -179,7 +179,7 @@ def run():
                                 "contents": [
                                 {
                                     "type": "text",
-                                    "text": "วันที่ครบกำหนด",
+                                    "text": "วันที่",
                                     "color": "#aaaaaa",
                                     "size": "sm",
                                     "flex": 3
@@ -198,20 +198,6 @@ def run():
                         },
                         {
                             "type": "separator",
-                            "margin": "md"
-                        },
-                        {
-                            "type": "box",
-                            "layout": "baseline",
-                            "contents": [
-                            {
-                                "type": "text",
-                                "text": "กรุณากินข้าวให้ตรงเวลา",
-                                "size": "sm",
-                                "wrap": True,
-                                "align": "center"
-                            }
-                            ],
                             "margin": "md"
                         }
                         ]
