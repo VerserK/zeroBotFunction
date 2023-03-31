@@ -156,7 +156,8 @@ def run():
                     ",[Vehicle Identification Number (Vehicle Identification No.)]"
                     ",[Labor Value Main Type]"
                 "FROM [ZEROSearchDB].[dbo].[Service_Plan]" 
-                "WHERE [Next Service Date] = '" + datequeryStr + "'"
+                # "WHERE [Next Service Date] = '" + datequeryStr + "'"
+                "WHERE [Next Service Date] = '2023-03-22'"
             )
     resultsetloc = conn.execute(query)
     results_as_dict_loc = resultsetloc.mappings().all()
@@ -176,6 +177,7 @@ def run():
 
         for x,i in df1.iterrows():
             UID = i['UserId']
+            # UID = 'U97caf21a53b92919005e158b429c8c2b'
             ProductType = i['Product Type']
             if ProductType == 'TRACTOR':
                 ProductType = 'รถแทรกเตอร์'
@@ -186,6 +188,18 @@ def run():
             elif ProductType == 'COMBINE HARVESTER':
                 ProductType = 'รถเกี่ยวนวดข้าว'
             nextservicedate = thai_strftime(row['Next Service Date'],"%d-%m-%Y")
+            queryKIS = sa.text("SELECT *"
+                        "FROM [KIS Data].[dbo].[Engine_Hours_Record]"
+                        "WHERE [Equipment_Name] = '" + row['Vehicle Identification Number (Vehicle Identification No.)'] + "' AND [LastUpdate] = CAST(GETDATE()-1 as date )"
+                        )
+            CheckKIS = conn.execute(queryKIS)
+            dict_Check_KIS = CheckKIS.mappings().all()
+            dfCheckKIS = pd.DataFrame(dict_Check_KIS)
+            if len(dfCheckKIS) > 0:
+                for kisindex,kisloc in dfCheckKIS.iterrows():
+                    CountHourKIS = str(kisloc['Hours'])
+            else:
+                CountHourKIS = row['Counter for Next Service']
             url = 'https://api.line.me/v2/bot/message/push'
             headers = {'content-type': 'application/json','Authorization':'Bearer J9o+1YH2mYc/4RiFFOjgXTYqCIxT//ctqWgLjB4kyYlw8qaieSnNl42uyn/TMfk7PuWAe9S8hyL5JDIA00Vfr24Ltdq+97ds4BNk4htsAIRkiDDAVQ0PKiz2wreUTFBG4Vpv+hDtLSk1QAnu2V2pOwdB04t89/1O/w1cDnyilFU='}
             body = {
@@ -296,7 +310,7 @@ def run():
                                         },
                                         {
                                             "type": "text",
-                                            "text": str(row['Counter for Next Service']),
+                                            "text": str(CountHourKIS),
                                             "flex": 5,
                                             "color": "#666666",
                                             "size": "sm",
@@ -571,5 +585,3 @@ def run():
                                     qrydf3.append(callRow(b['รายการอะไหล่ที่เปลี่ยน'],b['จำนวนชิ้น ']))
                                     qrydf3 = unique(qrydf3)
                                 sendApi(UID,qrydf3)
-
-run()
