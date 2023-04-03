@@ -504,10 +504,10 @@ def run():
                 laborvalue = row['Labor Value Main Type']
                 laborvalue = laborvalue.split(' ')
                 lv = ''.join(laborvalue[0])
-                master = [50,100,150,200]
+                master = [20,30,50,100,150,200,250,300,350,400,450,500,550,600,650,700,750,800,900,950,1000,1050,1100,1150,1200,1250,1300,1350,1400,1450,1500,1550,1600,1650,1700,1750,1800,1850,1900,1950,2000]
                 if row['Counter for Next Service'] in master:
                     qry = sa.text("SELECT *"
-                        "FROM [ZEROSearchDB].[dbo].[Mt_Combine]"
+                        "FROM [ZEROSearchDB].[dbo].[Mt_Rice]"
                         "WHERE [สินค้า] LIKE '"+ lv +"'"
                         "AND (["+ str(row['Counter for Next Service']) + "] <> '0')"
                     )
@@ -516,8 +516,56 @@ def run():
                     df3 = pd.DataFrame(results_as_dict_Check)
                     qrydf3 = []
                     for a,b in df3.iterrows():
-                        qrydf3.append(callRow(b['รายการอะไหล่ที่เปลี่ยน'],b['จำนวนชิ้น ']))
+                        qrydf3.append(callRow(b['รายการอะไหล่ที่เปลี่ยน'],b['จำนวนชิ้น']))
                     sendApi(UID,qrydf3)
+                else:
+                    NextService = row['Counter for Next Service']
+                    oper = []
+                    qry = sa.text("SELECT *"
+                        "FROM [ZEROSearchDB].[dbo].[Mt_Rice]"
+                        "WHERE [สินค้า] LIKE '"+ lv +"%'"
+                    )
+                    resultsetCheck = conn.execute(qry)
+                    results_as_dict_Check = resultsetCheck.mappings().all()
+                    df4 = pd.DataFrame(results_as_dict_Check)
+                    oper = df4['ชั่วโมงต่อไป'].str.strip('.ทุกชม ปีๆชั่วโมง')
+                    out = oper.to_numpy().tolist()
+                    newOut = unique(out)
+                    newOut.remove(None)
+                    newOut.remove('2')
+                    qrydf3 = []
+                    for m in newOut:
+                        if m == 8002:
+                            m = 800
+                            conditionService = NextService % int(m)
+                            if conditionService == 0:
+                                qry = sa.text("SELECT *"
+                                    "FROM [ZEROSearchDB].[dbo].[Mt_Rice]"
+                                    "WHERE [สินค้า] LIKE '"+ lv +"%'"
+                                    "AND (["+ m + "] <> '0')"
+                                )
+                                resultsetCheck = conn.execute(qry)
+                                results_as_dict_Check = resultsetCheck.mappings().all()
+                                df3 = pd.DataFrame(results_as_dict_Check)
+                                for a,b in df3.iterrows():
+                                    qrydf3.append(callRow(b['รายการอะไหล่ที่เปลี่ยน'],b['จำนวนชิ้น']))
+                                    qrydf3 = unique(qrydf3)
+                                sendApi(UID,qrydf3)
+                        else:
+                            conditionService = NextService % int(m)
+                            if conditionService == 0:
+                                qry = sa.text("SELECT *"
+                                    "FROM [ZEROSearchDB].[dbo].[Mt_Rice]"
+                                    "WHERE [สินค้า] LIKE '"+ lv +"%'"
+                                    "AND (["+ m + "] <> '0')"
+                                )
+                                resultsetCheck = conn.execute(qry)
+                                results_as_dict_Check = resultsetCheck.mappings().all()
+                                df3 = pd.DataFrame(results_as_dict_Check)
+                                for a,b in df3.iterrows():
+                                    qrydf3.append(callRow(b['รายการอะไหล่ที่เปลี่ยน'],b['จำนวนชิ้น']))
+                                    qrydf3 = unique(qrydf3)
+                                sendApi(UID,qrydf3)
             elif i['Product Type'] == 'COMBINE HARVESTER':
                 print('COMBINE HARVESTER')
                 laborvalue = row['Labor Value Main Type']
