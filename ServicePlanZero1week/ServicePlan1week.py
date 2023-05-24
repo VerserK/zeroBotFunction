@@ -153,7 +153,7 @@ def run():
     query = sa.text("SELECT"
                     "[Next Service Date]"
                     ",[Counter for Next Service]"
-                    ",[Vehicle Identification Number (Vehicle Identification No.)]"
+                    ",[VIN]"
                     ",[Labor Value Main Type]"
                 "FROM [ZEROSearchDB].[dbo].[Service_Plan]" 
                 "WHERE [Next Service Date] = '" + datequeryStr + "'"
@@ -167,7 +167,7 @@ def run():
         ### Query Check User ###
         qry = sa.text("SELECT PL.[Name],PL.[TaxId],PL.[UserId],IAC.[VIN],IAC.[Product Type],IAC.[Model] FROM [Line Data].[dbo].[Profile Line] PL "
                     "INNER JOIN [CRM Data].[dbo].[ID_Address_Consent] IAC ON PL.[TaxId] = IAC.[Tax ID]"
-                    "WHERE IAC.[VIN] = '"+ row['Vehicle Identification Number (Vehicle Identification No.)'] +"'"
+                    "WHERE IAC.[VIN] = '"+ row['VIN'] +"'"
                     "ORDER BY [UserId] OFFSET 0 ROWS FETCH NEXT 500 ROWS ONLY"
                     )
         resultsetCheck = conn.execute(qry)
@@ -190,7 +190,7 @@ def run():
             nextservicedate = thai_strftime(row['Next Service Date'],"%d-%m-%Y")
             queryKIS = sa.text("SELECT *"
                         "FROM [KIS Data].[dbo].[Engine_Hours_Record]"
-                        "WHERE [Equipment_Name] = '" + row['Vehicle Identification Number (Vehicle Identification No.)'] + "' AND [LastUpdate] = CAST(GETDATE()-1 as date )"
+                        "WHERE [Equipment_Name] = '" + row['VIN'] + "' AND [LastUpdate] = CAST(GETDATE()-1 as date )"
                         )
             CheckKIS = conn.execute(queryKIS)
             dict_Check_KIS = CheckKIS.mappings().all()
@@ -268,7 +268,7 @@ def run():
                                         },
                                         {
                                             "type": "text",
-                                            "text": row['Vehicle Identification Number (Vehicle Identification No.)'],
+                                            "text": row['VIN'],
                                             "wrap": True,
                                             "color": "#666666",
                                             "size": "sm",
