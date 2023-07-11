@@ -207,13 +207,13 @@ def run():
     conn = engine.connect()
 
     query = sa.text("SELECT"
-                    "[Next Service Date]"
+                    "[Plan Date]"
                     ",[Counter for Next Service]"
-                    ",[Vehicle Identification Number (Vehicle Identification No.)]"
-                    ",[Labor Value Main Type]"
+                    ",[VIN]"
+                    ",[LV Main Type]"
                 "FROM [ZEROSearchDB].[dbo].[Service_Plan]" 
-                "WHERE [Next Service Date] = '" + datequeryStr + "'"
-                # "WHERE [Next Service Date] = '2023-03-22'"
+                "WHERE [Plan Date] = '" + datequeryStr + "'"
+                # "WHERE [Plan Date] = '2023-03-22'"
             )
     resultsetloc = conn.execute(query)
     results_as_dict_loc = resultsetloc.mappings().all()
@@ -224,7 +224,7 @@ def run():
         qry = sa.text("SELECT PL.[Name],PL.[TaxId],PL.[UserId],IAC.[VIN],IAC.[Product Type],IAC.[Model], MC.[Name] AS McName FROM [Line Data].[dbo].[Profile Line] PL "
                     "INNER JOIN [CRM Data].[dbo].[ID_Address_Consent] IAC ON PL.[TaxId] = IAC.[Tax ID]"
                     "LEFT JOIN [Line Data].[dbo].[MC Name] MC ON IAC.[VIN] = MC.[VIN]"
-                    "WHERE IAC.[VIN] = '"+ row['Vehicle Identification Number (Vehicle Identification No.)'] +"'"
+                    "WHERE IAC.[VIN] = '"+ row['VIN'] +"'"
                     "ORDER BY [UserId] OFFSET 0 ROWS FETCH NEXT 500 ROWS ONLY"
                     )
         resultsetCheck = conn.execute(qry)
@@ -233,7 +233,7 @@ def run():
         df1 = pd.DataFrame(results_as_dict_Check)
 
         queryCheckKis = sa.text("SELECT [Equipment_Name] FROM [KIS Data].[dbo].[Engine_Detail] "
-                    "WHERE [Equipment_Name] = '"+ row['Vehicle Identification Number (Vehicle Identification No.)'] +"'"
+                    "WHERE [Equipment_Name] = '"+ row['VIN'] +"'"
                     "ORDER BY [Equipment_Name] OFFSET 0 ROWS FETCH NEXT 1 ROWS ONLY"
                     )
         checkKis = conn.execute(queryCheckKis)
@@ -251,14 +251,14 @@ def run():
                 ProductType = 'รถดำนา'
             elif ProductType == 'COMBINE HARVESTER':
                 ProductType = 'รถเกี่ยวนวดข้าว'
-            nextservicedate = thai_strftime(row['Next Service Date'],"%d-%m-%Y")
+            nextservicedate = thai_strftime(row['Plan Date'],"%d-%m-%Y")
             if i['McName'] == None:
                 McName = '-'
             else :
                 McName = i['McName']
             queryKIS = sa.text("SELECT *"
                         "FROM [KIS Data].[dbo].[Engine_Hours_Record]"
-                        "WHERE [Equipment_Name] = '" + row['Vehicle Identification Number (Vehicle Identification No.)'] + "'"
+                        "WHERE [Equipment_Name] = '" + row['VIN'] + "'"
                         "ORDER BY [LastUpdate] Desc OFFSET 0 ROWS FETCH NEXT 1 ROWS ONLY"
                         )
             CheckKIS = conn.execute(queryKIS)
@@ -408,7 +408,7 @@ def run():
                                         },
                                         {
                                             "type": "text",
-                                            "text": row['Vehicle Identification Number (Vehicle Identification No.)'],
+                                            "text": row['VIN'],
                                             "wrap": true
                                         }
                                         ]
@@ -425,7 +425,7 @@ def run():
                                         },
                                         {
                                             "type": "text",
-                                            "text": row['Labor Value Main Type'],
+                                            "text": row['LV Main Type'],
                                             "wrap": true
                                         }
                                         ]
@@ -553,7 +553,7 @@ def run():
 
             if len(checkKis_as_dict) == 0:
                 if i['Product Type'] == 'TRACTOR':
-                    laborvalue = row['Labor Value Main Type']
+                    laborvalue = row['LV Main Type']
                     laborvalue = laborvalue.split(' ')
                     lv = ''.join(laborvalue[0])
                     master = [50,100,150,200,250,300,350,400,450,500,550,600,650,700,750,800,850,900,950,1000,1100,1200,1250,1300,1400,1500,1600,1700,1750,1800,1900,2000]
@@ -608,7 +608,7 @@ def run():
                                 sendApi(UID,qrydf3,sumAll)
                 elif i['Product Type'] == 'MINI EXCAVATOR':
                     print('MINI EXCAVATOR')
-                    laborvalue = row['Labor Value Main Type']
+                    laborvalue = row['LV Main Type']
                     laborvalue = laborvalue.split(' ')
                     lv = ''.join(laborvalue[0])
                     master = [50,100,250,500,750,1000,1250,1500,1750,2000]
@@ -681,7 +681,7 @@ def run():
                                     sendApi(UID,qrydf3,sumAll)
                 elif i['Product Type'] == 'RICE TRANSPLANTER':
                     print('RICE TRANSPLANTER')
-                    laborvalue = row['Labor Value Main Type']
+                    laborvalue = row['LV Main Type']
                     laborvalue = laborvalue.split(' ')
                     lv = ''.join(laborvalue[0])
                     master = [20,30,50,100,150,200,250,300,350,400,450,500,550,600,650,700,750,800,900,950,1000,1050,1100,1150,1200,1250,1300,1350,1400,1450,1500,1550,1600,1650,1700,1750,1800,1850,1900,1950,2000]
@@ -753,7 +753,7 @@ def run():
                                         qrydf3 = unique(qrydf3)
                                     sendApi(UID,qrydf3,sumAll)
                 elif i['Product Type'] == 'COMBINE HARVESTER':
-                    laborvalue = row['Labor Value Main Type']
+                    laborvalue = row['LV Main Type']
                     laborvalue = laborvalue.split(' ')
                     lv = ''.join(laborvalue[0])
                     master = [50,100,150,200,250,300,350,400,450,500,550,600,650,700,750,800,900,950,1000,1050,1100,1150,1200,1250,1300,1350,1400,1450,1500,1550,1600,1650,1700,1750,1800,1850,1900,1950,2000]
@@ -826,7 +826,7 @@ def run():
                                     sendApi(UID,qrydf3,sumAll)
             else :
                 queryPeriodical = sa.text("SELECT [description (TH)],[Next Hours],[Next Date] FROM [KIS Data].[dbo].[Engine_Periodical_Check] "
-                    "WHERE [VIN] = '"+ row['Vehicle Identification Number (Vehicle Identification No.)'] +"' AND [Last Update] = '"+datequeryStr+"'"
+                    "WHERE [VIN] = '"+ row['VIN'] +"' AND [Last Update] = '"+datequeryStr+"'"
                     )
                 dataPeriodical = conn.execute(queryPeriodical)
                 dataPeriodical_as_dick = dataPeriodical.mappings().all()
