@@ -8,6 +8,7 @@ import pandas as pd
 def cellLoc(VIN):
     datetime_obj = datetime.datetime.now()
     datequeryStr = datetime_obj.strftime("%Y-%m-%d")
+    datequeryStr = '2023-07-12'
 
     ### Connect DB ####
     server = 'skcdwhprdmi.siamkubota.co.th'
@@ -44,9 +45,9 @@ def cellLoc(VIN):
             if listHour[0] == '0':
                 Hour = listHour[1]+' นาที'
             else :
-                Hour = listHour[0]+' ชม. '+listHour[1]+' นาที'
+                Hour = listHour[0]+' ชั่วโมง '+listHour[1]+' นาที'
         except:
-            Hour = str(row['Hour'])+' ชม.'
+            Hour = str(row['Hour'])+' ชั่วโมง'
         address={
                 "type": "box",
                 "layout": "baseline",
@@ -59,7 +60,7 @@ def cellLoc(VIN):
                     },
                     {
                         "type": "text",
-                        "text": 'ต.'+ str(row['SubDistrict']) + ' อ.' + str(row['District']) + ' จ.' + str(row['Province']) + ' ' + str(row['Country']) + ' \n(' + str(Hour) +')',
+                        "text": 'ต.'+ str(row['SubDistrict']) + ' อ.' + str(row['District']) + ' จ.' + str(row['Province']) + '\n(' + str(Hour) +')',
                         "wrap": True
                     }
                 ]
@@ -72,10 +73,12 @@ def main():
     datetime_obj = datetime.datetime.now()
     datetimeThai = thai_strftime(datetime_obj, "%A %d %B %Y")
     datequeryStr = datetime_obj.strftime("%Y-%m-%d")
+    Linetoken = 'HvSWl3gV8+hLK5/2xb8Fejzg5QxJRdvtZiHf5irm0RiMpD6h1Owlj15XpwdHX6bVbXtfktmgXCEc0WmYzk/i8lKxNNCRnmo78QPupI9CVqvUTPaPtrbETMzLZcE+AKiEBK4CP7BzcE9Y2jy1YEDjRwdB04t89/1O/w1cDnyilFU='
+    datequeryStr = '2023-07-12'
 
     ### Connect DB ####
     server = 'skcdwhprdmi.siamkubota.co.th'
-    database =  'master'
+    database = 'KIS Data'
     username = 'skcadminuser'
     password = 'DEE@skcdwhtocloud2022prd'
     driver = '{ODBC Driver 17 for SQL Server}'
@@ -111,6 +114,7 @@ def main():
     resultset = conn.execute(qry)
     results_as_dict = resultset.mappings().all()
     df1 = pd.DataFrame(results_as_dict)
+
     dfFinal = df.merge(df1, left_on='EquipmentName', right_on='VIN')
     dfFinal = dfFinal.sort_values(by=['UserId'])
     for index, row in dfFinal.iterrows():
@@ -129,7 +133,7 @@ def main():
         else :
             McName = row['McName']
         url = 'https://api.line.me/v2/bot/message/push'
-        headers = {'content-type': 'application/json','Authorization':'Bearer J9o+1YH2mYc/4RiFFOjgXTYqCIxT//ctqWgLjB4kyYlw8qaieSnNl42uyn/TMfk7PuWAe9S8hyL5JDIA00Vfr24Ltdq+97ds4BNk4htsAIRkiDDAVQ0PKiz2wreUTFBG4Vpv+hDtLSk1QAnu2V2pOwdB04t89/1O/w1cDnyilFU='}
+        headers = {'content-type': 'application/json','Authorization':'Bearer ' + Linetoken}
         body = {
         "to": row['UserId'],
         "messages": [

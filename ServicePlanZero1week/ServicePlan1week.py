@@ -193,12 +193,13 @@ def run():
     timedel = datetime.timedelta(days=7)
     datetime_obj = datetime_obj + timedel
     datequeryStr = datetime_obj.strftime("%Y-%m-%d")
+    Linetoken = 'HvSWl3gV8+hLK5/2xb8Fejzg5QxJRdvtZiHf5irm0RiMpD6h1Owlj15XpwdHX6bVbXtfktmgXCEc0WmYzk/i8lKxNNCRnmo78QPupI9CVqvUTPaPtrbETMzLZcE+AKiEBK4CP7BzcE9Y2jy1YEDjRwdB04t89/1O/w1cDnyilFU='
     # Test Date
     # datequeryStr = '2023-08-18'
 
     ### Connect DB ####
     server = 'skcdwhprdmi.siamkubota.co.th'
-    database =  'KIS Data'
+    database = 'KIS Data'
     username = 'skcadminuser'
     password = 'DEE@skcdwhtocloud2022prd'
     driver = '{ODBC Driver 17 for SQL Server}'
@@ -290,7 +291,7 @@ def run():
                     CountHourKIS = str(row['Counter for Next Service'])+' ชม.'
                 
                 url = 'https://api.line.me/v2/bot/message/push'
-                headers = {'content-type': 'application/json','Authorization':'Bearer HvSWl3gV8+hLK5/2xb8Fejzg5QxJRdvtZiHf5irm0RiMpD6h1Owlj15XpwdHX6bVbXtfktmgXCEc0WmYzk/i8lKxNNCRnmo78QPupI9CVqvUTPaPtrbETMzLZcE+AKiEBK4CP7BzcE9Y2jy1YEDjRwdB04t89/1O/w1cDnyilFU='}
+                headers = {'content-type': 'application/json','Authorization':'Bearer ' + Linetoken}
                 body = {
                     "to": i['UserId'],
                     "messages": [
@@ -925,7 +926,7 @@ def run():
                 CountHourKIS = str(row['Counter for Next Service'])+' ชม.'
             
             url = 'https://api.line.me/v2/bot/message/push'
-            headers = {'content-type': 'application/json','Authorization':'Bearer HvSWl3gV8+hLK5/2xb8Fejzg5QxJRdvtZiHf5irm0RiMpD6h1Owlj15XpwdHX6bVbXtfktmgXCEc0WmYzk/i8lKxNNCRnmo78QPupI9CVqvUTPaPtrbETMzLZcE+AKiEBK4CP7BzcE9Y2jy1YEDjRwdB04t89/1O/w1cDnyilFU='}
+            headers = {'content-type': 'application/json','Authorization':'Bearer ' + Linetoken}
             body = {
                 "to": i['UserId'],
                 "messages": [

@@ -9,11 +9,12 @@ def run():
     true = True
     datetime_obj = datetime.datetime.now()
     datequeryStr = datetime_obj.strftime("%Y-%m-%d")
+    Linetoken = 'HvSWl3gV8+hLK5/2xb8Fejzg5QxJRdvtZiHf5irm0RiMpD6h1Owlj15XpwdHX6bVbXtfktmgXCEc0WmYzk/i8lKxNNCRnmo78QPupI9CVqvUTPaPtrbETMzLZcE+AKiEBK4CP7BzcE9Y2jy1YEDjRwdB04t89/1O/w1cDnyilFU='
     # datequeryStr = '2023-01-15'
 
     ### Connect DB ####
     server = 'skcdwhprdmi.siamkubota.co.th'
-    database =  'KIS Data'
+    database = 'KIS Data'
     username = 'skcadminuser'
     password = 'DEE@skcdwhtocloud2022prd'
     driver = '{ODBC Driver 17 for SQL Server}'
@@ -38,6 +39,7 @@ def run():
                         "[EPC].[VIN] "
                         ",[Next Hours] as [Counter for Next Service] "
                         ",[LV Main Type] "
+                        ",[Hours] "
                         ",[Next Date] as [Plan Date] "
                     "FROM [KIS Data].[dbo].[Engine_Periodical_Check] EPC "
                     "INNER JOIN [ZEROSearchDB].[dbo].[Service_Plan] SP ON [SP].[VIN] = [EPC].[VIN] " 
@@ -73,9 +75,9 @@ def run():
                     McName = '-'
                 else :
                     McName = i['McName']
-                nextservicedate = thai_strftime(row['Next Service Date'],"%d-%m-%Y")
+                nextservicedate = thai_strftime(row['Plan Date'],"%d-%m-%Y")
                 url = 'https://api.line.me/v2/bot/message/push'
-                headers = {'content-type': 'application/json','Authorization':'Bearer J9o+1YH2mYc/4RiFFOjgXTYqCIxT//ctqWgLjB4kyYlw8qaieSnNl42uyn/TMfk7PuWAe9S8hyL5JDIA00Vfr24Ltdq+97ds4BNk4htsAIRkiDDAVQ0PKiz2wreUTFBG4Vpv+hDtLSk1QAnu2V2pOwdB04t89/1O/w1cDnyilFU='}
+                headers = {'content-type': 'application/json','Authorization':'Bearer '+ Linetoken}
                 body = {
                     "to": i['UserId'],
                     "messages": [
@@ -205,7 +207,7 @@ def run():
                                             },
                                             {
                                                 "type": "text",
-                                                "text": row['Vehicle Identification Number (Vehicle Identification No.)'],
+                                                "text": row['VIN'],
                                                 "wrap": true
                                             }
                                             ]
@@ -222,7 +224,7 @@ def run():
                                             },
                                             {
                                                 "type": "text",
-                                                "text": row['Labor Value Main Type'],
+                                                "text": row['LV Main Type'],
                                                 "wrap": true
                                             }
                                             ]
@@ -239,7 +241,7 @@ def run():
                                             },
                                             {
                                                 "type": "text",
-                                                "text": str(row['Counter for Next Service'])+' ชม.',
+                                                "text": str(row['Hours'])+' ชม.',
                                                 "wrap": true
                                             }
                                             ]
@@ -386,9 +388,9 @@ def run():
                     McName = '-'
                 else :
                     McName = i['McName']
-                nextservicedate = thai_strftime(row['Next Service Date'],"%d-%m-%Y")
+                nextservicedate = thai_strftime(row['Plan Date'],"%d-%m-%Y")
                 url = 'https://api.line.me/v2/bot/message/push'
-                headers = {'content-type': 'application/json','Authorization':'Bearer J9o+1YH2mYc/4RiFFOjgXTYqCIxT//ctqWgLjB4kyYlw8qaieSnNl42uyn/TMfk7PuWAe9S8hyL5JDIA00Vfr24Ltdq+97ds4BNk4htsAIRkiDDAVQ0PKiz2wreUTFBG4Vpv+hDtLSk1QAnu2V2pOwdB04t89/1O/w1cDnyilFU='}
+                headers = {'content-type': 'application/json','Authorization':'Bearer ' + Linetoken}
                 body = {
                     "to": i['UserId'],
                     "messages": [
@@ -518,7 +520,7 @@ def run():
                                             },
                                             {
                                                 "type": "text",
-                                                "text": row['Vehicle Identification Number (Vehicle Identification No.)'],
+                                                "text": row['VIN'],
                                                 "wrap": true
                                             }
                                             ]
@@ -535,7 +537,7 @@ def run():
                                             },
                                             {
                                                 "type": "text",
-                                                "text": row['Labor Value Main Type'],
+                                                "text": row['LV Main Type'],
                                                 "wrap": true
                                             }
                                             ]
