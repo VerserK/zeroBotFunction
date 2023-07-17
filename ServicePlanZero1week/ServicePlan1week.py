@@ -4,6 +4,7 @@ from pythainlp.util import thai_strftime
 import sqlalchemy as sa
 import urllib
 import pandas as pd
+from datetime import datetime, date, timedelta
 
 def callRow(sparepart,quantity):
     callRow = {
@@ -189,13 +190,13 @@ def unique(list1):
 
 def run():
     true = True
-    datetime_obj = datetime.datetime.now()
-    timedel = datetime.timedelta(days=7)
+    datetime_obj = datetime.now()
+    timedel = timedelta(days=7)
     datetime_obj = datetime_obj + timedel
     datequeryStr = datetime_obj.strftime("%Y-%m-%d")
     Linetoken = 'HvSWl3gV8+hLK5/2xb8Fejzg5QxJRdvtZiHf5irm0RiMpD6h1Owlj15XpwdHX6bVbXtfktmgXCEc0WmYzk/i8lKxNNCRnmo78QPupI9CVqvUTPaPtrbETMzLZcE+AKiEBK4CP7BzcE9Y2jy1YEDjRwdB04t89/1O/w1cDnyilFU='
     # Test Date
-    # datequeryStr = '2023-08-18'
+    # datequeryStr = '2023-07-08'
 
     ### Connect DB ####
     server = 'skcdwhprdmi.siamkubota.co.th'
@@ -264,7 +265,7 @@ def run():
                     ProductType = 'รถดำนา'
                 elif ProductType == 'COMBINE HARVESTER':
                     ProductType = 'รถเกี่ยวนวดข้าว'
-                nextservicedate = thai_strftime(row['Plan Date'],"%d-%m-%Y")
+                nextservicedate = thai_strftime(row['Plan Date'],"%d %B %Y")
                 if i['McName'] == None:
                     McName = '-'
                 else :
@@ -284,12 +285,14 @@ def run():
                             if listHour[0] == '0':
                                 CountHourKIS = listHour[1]+' นาที'
                             else :
-                                CountHourKIS = listHour[0]+' ชม. '+listHour[1]+' นาที'   
+                                CountHourKISStr = listHour[0]
+                                print(CountHourKISStr)
+                                CountHourKIS = ('{:,}'.format(int(CountHourKISStr)))+' ชั่วโมง '+listHour[1]+' นาที'   
                         except:     
-                            CountHourKIS = str(kisloc['Hours'])+' ชม.'       
+                            CountHourKIS = ('{:,}'.format(str(kisloc['Hours'])))+' ชั่วโมง'       
                 else:
-                    CountHourKIS = str(row['Counter for Next Service'])+' ชม.'
-                
+                    CountHourKIS = ('{:,}'.format(int(row['Counter for Next Service'])))+' ชั่วโมง'
+                countfornextserviceStr = ('{:,}'.format(int(row['Counter for Next Service'])))
                 url = 'https://api.line.me/v2/bot/message/push'
                 headers = {'content-type': 'application/json','Authorization':'Bearer ' + Linetoken}
                 body = {
@@ -503,7 +506,7 @@ def run():
                                             },
                                             {
                                                 "type": "text",
-                                                "text": str(row['Counter for Next Service'])+' ชม.',
+                                                "text": countfornextserviceStr +' ชั่วโมง',
                                                 "wrap": true
                                             }
                                             ]
@@ -899,7 +902,7 @@ def run():
                 ProductType = 'รถดำนา'
             elif ProductType == 'COMBINE HARVESTER':
                 ProductType = 'รถเกี่ยวนวดข้าว'
-            nextservicedate = thai_strftime(row['Plan Date'],"%d-%m-%Y")
+            nextservicedate = thai_strftime(row['Plan Date'],"%d %B %Y")
             if i['McName'] == None:
                 McName = '-'
             else :
@@ -919,11 +922,14 @@ def run():
                         if listHour[0] == '0':
                             CountHourKIS = listHour[1]+' นาที'
                         else :
-                            CountHourKIS = listHour[0]+' ชม. '+listHour[1]+' นาที'   
+                            CountHourKISStr = listHour[0]
+                            print(CountHourKISStr)
+                            CountHourKIS = ('{:,}'.format(int(CountHourKISStr)))+' ชั่วโมง '+listHour[1]+' นาที'   
                     except:     
-                        CountHourKIS = str(kisloc['Hours'])+' ชม.'       
+                        CountHourKIS = ('{:,}'.format(str(kisloc['Hours'])))+' ชั่วโมง'       
             else:
-                CountHourKIS = str(row['Counter for Next Service'])+' ชม.'
+                CountHourKIS = ('{:,}'.format(int(row['Counter for Next Service'])))+' ชั่วโมง'
+            countfornextserviceStr = ('{:,}'.format(int(row['Counter for Next Service'])))
             
             url = 'https://api.line.me/v2/bot/message/push'
             headers = {'content-type': 'application/json','Authorization':'Bearer ' + Linetoken}
@@ -1138,7 +1144,7 @@ def run():
                                         },
                                         {
                                             "type": "text",
-                                            "text": str(row['Counter for Next Service'])+' ชม.',
+                                            "text": countfornextserviceStr+' ชั่วโมง',
                                             "wrap": true
                                         }
                                         ]

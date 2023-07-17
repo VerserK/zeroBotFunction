@@ -10,7 +10,7 @@ def run():
     datetime_obj = datetime.datetime.now()
     datequeryStr = datetime_obj.strftime("%Y-%m-%d")
     Linetoken = 'HvSWl3gV8+hLK5/2xb8Fejzg5QxJRdvtZiHf5irm0RiMpD6h1Owlj15XpwdHX6bVbXtfktmgXCEc0WmYzk/i8lKxNNCRnmo78QPupI9CVqvUTPaPtrbETMzLZcE+AKiEBK4CP7BzcE9Y2jy1YEDjRwdB04t89/1O/w1cDnyilFU='
-    # datequeryStr = '2023-01-15'
+    # datequeryStr = '2023-07-08'
 
     ### Connect DB ####
     server = 'skcdwhprdmi.siamkubota.co.th'
@@ -75,7 +75,9 @@ def run():
                     McName = '-'
                 else :
                     McName = i['McName']
-                nextservicedate = thai_strftime(row['Plan Date'],"%d-%m-%Y")
+                countfornextserviceStr = ('{:,}'.format(int(row['Counter for Next Service'])))
+                hoursService = ('{:,}'.format(float(row['Hours'])))
+                nextservicedate = thai_strftime(row['Plan Date'],"%d %B %Y")
                 url = 'https://api.line.me/v2/bot/message/push'
                 headers = {'content-type': 'application/json','Authorization':'Bearer '+ Linetoken}
                 body = {
@@ -241,7 +243,7 @@ def run():
                                             },
                                             {
                                                 "type": "text",
-                                                "text": str(row['Hours'])+' ชม.',
+                                                "text": hoursService+' ชั่วโมง',
                                                 "wrap": true
                                             }
                                             ]
@@ -289,7 +291,7 @@ def run():
                                             },
                                             {
                                                 "type": "text",
-                                                "text": str(row['Counter for Next Service'])+' ชม.',
+                                                "text": countfornextserviceStr+' ชั่วโมง',
                                                 "wrap": true
                                             }
                                             ]
@@ -388,7 +390,8 @@ def run():
                     McName = '-'
                 else :
                     McName = i['McName']
-                nextservicedate = thai_strftime(row['Plan Date'],"%d-%m-%Y")
+                countfornextserviceStr = ('{:,}'.format(int(row['Counter for Next Service'])))
+                nextservicedate = thai_strftime(row['Plan Date'],"%d %B %Y")
                 url = 'https://api.line.me/v2/bot/message/push'
                 headers = {'content-type': 'application/json','Authorization':'Bearer ' + Linetoken}
                 body = {
@@ -554,7 +557,7 @@ def run():
                                             },
                                             {
                                                 "type": "text",
-                                                "text": str(row['Counter for Next Service'])+' ชม.',
+                                                "text": countfornextserviceStr+' ชั่วโมง',
                                                 "wrap": true
                                             }
                                             ]
@@ -602,7 +605,7 @@ def run():
                                             },
                                             {
                                                 "type": "text",
-                                                "text": str(row['Counter for Next Service'])+' ชม.',
+                                                "text": countfornextserviceStr+' ชั่วโมง',
                                                 "wrap": true
                                             }
                                             ]
