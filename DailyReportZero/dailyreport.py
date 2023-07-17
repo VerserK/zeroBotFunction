@@ -8,7 +8,7 @@ import pandas as pd
 def cellLoc(VIN):
     datetime_obj = datetime.datetime.now()
     datequeryStr = datetime_obj.strftime("%Y-%m-%d")
-    datequeryStr = '2023-07-12'
+    # datequeryStr = '2023-07-12'
 
     ### Connect DB ####
     server = 'skcdwhprdmi.siamkubota.co.th'
@@ -326,4 +326,3 @@ def main():
         ]
     }
         r = requests.post(url, headers=headers, json=body)
-main()
