@@ -196,7 +196,7 @@ def run():
     datequeryStr = datetime_obj.strftime("%Y-%m-%d")
     Linetoken = 'HvSWl3gV8+hLK5/2xb8Fejzg5QxJRdvtZiHf5irm0RiMpD6h1Owlj15XpwdHX6bVbXtfktmgXCEc0WmYzk/i8lKxNNCRnmo78QPupI9CVqvUTPaPtrbETMzLZcE+AKiEBK4CP7BzcE9Y2jy1YEDjRwdB04t89/1O/w1cDnyilFU='
     # Test Date
-    # datequeryStr = '2023-07-08'
+    # datequeryStr = '2023-07-17'
 
     ### Connect DB ####
     server = 'skcdwhprdmi.siamkubota.co.th'
@@ -282,12 +282,20 @@ def run():
                     for kisindex,kisloc in dfCheckKIS.iterrows():
                         try:
                             listHour = str(kisloc['Hours']).split('.')
-                            if listHour[0] == '0':
-                                CountHourKIS = listHour[1]+' นาที'
-                            else :
-                                CountHourKISStr = listHour[0]
-                                print(CountHourKISStr)
-                                CountHourKIS = ('{:,}'.format(int(CountHourKISStr)))+' ชั่วโมง '+listHour[1]+' นาที'   
+                            CountHourKISStr = listHour[0]
+                            CountHourKIS = ('{:,}'.format(int(CountHourKISStr)))+' ชั่วโมง'
+                        # if listHour[0] == '0':
+                        #     CountHourKIS = listHour[1]+' นาที'
+                        # else :
+                        #     CountHourKISStr = listHour[0]
+                        #     print(CountHourKISStr)
+                        #     CountHourKIS = ('{:,}'.format(int(CountHourKISStr)))+' ชั่วโมง '+listHour[1]+' นาที' 
+                            # if listHour[0] == '0':
+                            #     CountHourKIS = listHour[1]+' นาที'
+                            # else :
+                            #     CountHourKISStr = listHour[0]
+                            #     print(CountHourKISStr)
+                            #     CountHourKIS = ('{:,}'.format(int(CountHourKISStr)))+' ชั่วโมง '+listHour[1]+' นาที'   
                         except:     
                             CountHourKIS = ('{:,}'.format(str(kisloc['Hours'])))+' ชั่วโมง'       
                 else:
@@ -919,16 +927,19 @@ def run():
                 for kisindex,kisloc in dfCheckKIS.iterrows():
                     try:
                         listHour = str(kisloc['Hours']).split('.')
-                        if listHour[0] == '0':
-                            CountHourKIS = listHour[1]+' นาที'
-                        else :
-                            CountHourKISStr = listHour[0]
-                            print(CountHourKISStr)
-                            CountHourKIS = ('{:,}'.format(int(CountHourKISStr)))+' ชั่วโมง '+listHour[1]+' นาที'   
+                        CountHourKISStr = listHour[0]
+                        CountHourKIS = ('{:,}'.format(int(CountHourKISStr)))+' ชั่วโมง'
+                        # if listHour[0] == '0':
+                        #     CountHourKIS = listHour[1]+' นาที'
+                        # else :
+                        #     CountHourKISStr = listHour[0]
+                        #     print(CountHourKISStr)
+                        #     CountHourKIS = ('{:,}'.format(int(CountHourKISStr)))+' ชั่วโมง '+listHour[1]+' นาที'   
                     except:     
                         CountHourKIS = ('{:,}'.format(str(kisloc['Hours'])))+' ชั่วโมง'       
             else:
                 CountHourKIS = ('{:,}'.format(int(row['Counter for Next Service'])))+' ชั่วโมง'
+            
             countfornextserviceStr = ('{:,}'.format(int(row['Counter for Next Service'])))
             
             url = 'https://api.line.me/v2/bot/message/push'
