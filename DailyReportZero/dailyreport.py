@@ -74,7 +74,7 @@ def main():
     datetimeThai = thai_strftime(datetime_obj, "%A %d %B %Y")
     datequeryStr = datetime_obj.strftime("%Y-%m-%d")
     Linetoken = 'HvSWl3gV8+hLK5/2xb8Fejzg5QxJRdvtZiHf5irm0RiMpD6h1Owlj15XpwdHX6bVbXtfktmgXCEc0WmYzk/i8lKxNNCRnmo78QPupI9CVqvUTPaPtrbETMzLZcE+AKiEBK4CP7BzcE9Y2jy1YEDjRwdB04t89/1O/w1cDnyilFU='
-    datequeryStr = '2023-07-12'
+    datequeryStr = '2023-07-16'
 
     ### Connect DB ####
     server = 'skcdwhprdmi.siamkubota.co.th'
@@ -326,3 +326,4 @@ def main():
         ]
     }
         r = requests.post(url, headers=headers, json=body)
+main()
