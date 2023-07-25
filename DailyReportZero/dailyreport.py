@@ -8,7 +8,7 @@ import pandas as pd
 def cellLoc(VIN):
     datetime_obj = datetime.datetime.now()
     datequeryStr = datetime_obj.strftime("%Y-%m-%d")
-    # datequeryStr = '2023-07-12'
+    # datequeryStr = '2021-01-12'
 
     ### Connect DB ####
     server = 'skcdwhprdmi.siamkubota.co.th'
@@ -31,7 +31,7 @@ def cellLoc(VIN):
             ",[Hour]"
             ",[Rank] FROM [KIS Data].[dbo].[Engine_Location_Agg] WHERE [LastUpdate] = '" + datequeryStr + "' AND [EquipmentName] = '" + VIN + "'"
             # ",[Rank] FROM [KIS Data].[dbo].[Engine_Location_Agg] WHERE [LastUpdate] = '2023-02-13' AND [EquipmentName] = '" + VIN + "'"
-            " AND [SubDistrict] <> '' AND [District] <> '' AND [Province] <> '' AND [Country] <> '' AND [Hour] > 0"
+            # " AND [SubDistrict] <> '' AND [District] <> '' AND [Province] <> '' AND [Country] <> '' AND [Hour] > 0"
             )
     resultsetloc = conn.execute(query)
     results_as_dict_loc = resultsetloc.mappings().all()
@@ -48,24 +48,42 @@ def cellLoc(VIN):
                 Hour = listHour[0]+' ชั่วโมง '+listHour[1]+' นาที'
         except:
             Hour = str(row['Hour'])+' ชั่วโมง'
-        address={
-                "type": "box",
-                "layout": "baseline",
-                "contents": [
-                    {
-                        "type": "text",
-                        "text": "จุดที่ ("+str(num)+") :",
-                        "wrap": True,
-                        "color": "#818181"
-                    },
-                    {
-                        "type": "text",
-                        "text": 'ต.'+ str(row['SubDistrict']) + ' อ.' + str(row['District']) + ' จ.' + str(row['Province']) + '\n(' + str(Hour) +')',
-                        "wrap": True
+        if row['Country'] == None:
+            address = {
+                        "type": "box",
+                        "layout": "baseline",
+                        "contents": [
+                        {
+                            "type": "text",
+                            "text": "วันนี้รถของคุณไม่ได้ทำงาน",
+                            "contents": []
+                        }
+                        ]
                     }
-                ]
-            }
-        locloop.append(address)
+            locloop.append(address)
+            print('IF')
+            print(locloop)
+        else:
+            address = {
+                    "type": "box",
+                    "layout": "baseline",
+                    "contents": [
+                        {
+                            "type": "text",
+                            "text": "จุดที่ ("+str(num)+") :",
+                            "wrap": True,
+                            "color": "#818181"
+                        },
+                        {
+                            "type": "text",
+                            "text": 'ต.'+ str(row['SubDistrict']) + ' อ.' + str(row['District']) + ' จ.' + str(row['Province']) + '\n(' + str(Hour) +')',
+                            "wrap": True
+                        }
+                    ]
+                }
+            locloop.append(address)
+            print('Else')
+            print(locloop)
     return locloop
 
 def main():
@@ -74,7 +92,7 @@ def main():
     datetimeThai = thai_strftime(datetime_obj, "%A %d %B %Y")
     datequeryStr = datetime_obj.strftime("%Y-%m-%d")
     Linetoken = 'HvSWl3gV8+hLK5/2xb8Fejzg5QxJRdvtZiHf5irm0RiMpD6h1Owlj15XpwdHX6bVbXtfktmgXCEc0WmYzk/i8lKxNNCRnmo78QPupI9CVqvUTPaPtrbETMzLZcE+AKiEBK4CP7BzcE9Y2jy1YEDjRwdB04t89/1O/w1cDnyilFU='
-    datequeryStr = '2023-07-16'
+    # datequeryStr = '2021-01-12'
 
     ### Connect DB ####
     server = 'skcdwhprdmi.siamkubota.co.th'
@@ -98,12 +116,13 @@ def main():
                 ",[Hour]"
                 ",[Rank] FROM [KIS Data].[dbo].[Engine_Location_Agg] WHERE [LastUpdate] = '" + datequeryStr + "'"
                 # ",[Rank] FROM [KIS Data].[dbo].[Engine_Location_Agg] WHERE [LastUpdate] = '2023-02-21'"
-                " AND [SubDistrict] <> '' AND [District] <> '' AND [Province] <> '' AND [Country] <> '' AND [Hour] > 0"
-                " AND [Rank] = 1"
+                # " AND [SubDistrict] <> '' AND [District] <> '' AND [Province] <> '' AND [Country] <> '' AND [Hour] > 0"
+                # " AND [Rank] = 1"
                 )
     resultsetnotnull = conn.execute(query)
     results_as_dict_notnull = resultsetnotnull.mappings().all()
     df = pd.DataFrame(results_as_dict_notnull)
+    print(df)
 
     ### Query Check User ###
     qry = sa.text("SELECT PL.[Name],PL.[TaxId],PL.[UserId],IAC.[VIN],IAC.[Product Type],IAC.[Model], MC.[Name] AS McName FROM [Line Data].[dbo].[Profile Line] PL "
@@ -114,9 +133,11 @@ def main():
     resultset = conn.execute(qry)
     results_as_dict = resultset.mappings().all()
     df1 = pd.DataFrame(results_as_dict)
+    print(df1)
 
     dfFinal = df.merge(df1, left_on='EquipmentName', right_on='VIN')
     dfFinal = dfFinal.sort_values(by=['UserId'])
+    print(dfFinal)
     for index, row in dfFinal.iterrows():
         ProductType = row['Product Type']
         if ProductType == 'TRACTOR':
@@ -134,6 +155,7 @@ def main():
             McName = row['McName']
         url = 'https://api.line.me/v2/bot/message/push'
         headers = {'content-type': 'application/json','Authorization':'Bearer ' + Linetoken}
+        print(row['UserId'])
         body = {
         "to": row['UserId'],
         "messages": [
