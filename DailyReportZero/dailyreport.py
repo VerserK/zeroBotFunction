@@ -136,6 +136,7 @@ def main():
     print(df1)
 
     dfFinal = df.merge(df1, left_on='EquipmentName', right_on='VIN')
+    dfFinal = dfFinal.drop_duplicates(subset=['VIN'], keep='last')
     dfFinal = dfFinal.sort_values(by=['UserId'])
     print(dfFinal)
     for index, row in dfFinal.iterrows():
