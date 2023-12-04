@@ -76,7 +76,8 @@ def cellLoc(VIN):
                         },
                         {
                             "type": "text",
-                            "text": 'ต.'+ str(row['SubDistrict']) + ' อ.' + str(row['District']) + ' จ.' + str(row['Province']) + '\n(' + str(Hour) +')',
+                            # "text": 'ต.'+ str(row['SubDistrict']) + ' อ.' + str(row['District']) + ' จ.' + str(row['Province']) + '\n(' + str(Hour) +')',
+                            "text": 'ต.'+ str(row['SubDistrict']) + ' อ.' + str(row['District']) + ' จ.' + str(row['Province']),
                             "wrap": True
                         }
                     ]
