@@ -30,7 +30,7 @@ def cellLoc(VIN):
             ",[Country]"
             ",[Hour]"
             ",[Rank] FROM [KIS Data].[dbo].[Engine_Location_Agg] WHERE [LastUpdate] = '" + datequeryStr + "' AND [EquipmentName] = '" + VIN + "'"
-            # ",[Rank] FROM [KIS Data].[dbo].[Engine_Location_Agg] WHERE [LastUpdate] = '2023-02-13' AND [EquipmentName] = '" + VIN + "'"
+            # ",[Rank] FROM [KIS Data].[dbo].[Engine_Location_Agg] WHERE [LastUpdate] = '2023-12-07' AND [EquipmentName] = 'KBCDZ552PP3D70009'"
             # " AND [SubDistrict] <> '' AND [District] <> '' AND [Province] <> '' AND [Country] <> '' AND [Hour] > 0"
             )
     resultsetloc = conn.execute(query)
@@ -43,9 +43,13 @@ def cellLoc(VIN):
         try:
             listHour = str(row['Hour']).split('.')
             if listHour[0] == '0':
-                Hour = listHour[1]+' นาที'
+                int_list = float('.'+listHour[1])
+                hourMin = str(int_list*60).split('.')
+                Hour = hourMin[0] +' นาที'
             else :
-                Hour = listHour[0]+' ชั่วโมง '+listHour[1]+' นาที'
+                int_list = float('.'+listHour[1])
+                hourMin = str(int_list*60).split('.')
+                Hour = listHour[0]+' ชั่วโมง '+hourMin[0]+' นาที'
         except:
             Hour = str(row['Hour'])+' ชั่วโมง'
         if row['Country'] == None:
@@ -76,8 +80,8 @@ def cellLoc(VIN):
                         },
                         {
                             "type": "text",
-                            # "text": 'ต.'+ str(row['SubDistrict']) + ' อ.' + str(row['District']) + ' จ.' + str(row['Province']) + '\n(' + str(Hour) +')',
-                            "text": 'ต.'+ str(row['SubDistrict']) + ' อ.' + str(row['District']) + ' จ.' + str(row['Province']),
+                            "text": 'ต.'+ str(row['SubDistrict']) + ' อ.' + str(row['District']) + ' จ.' + str(row['Province']) + '\n(' + str(Hour) +')',
+                            # "text": 'ต.'+ str(row['SubDistrict']) + ' อ.' + str(row['District']) + ' จ.' + str(row['Province']),
                             "wrap": True
                         }
                     ]
@@ -116,7 +120,7 @@ def main():
                 ",[Country]"
                 ",[Hour]"
                 ",[Rank] FROM [KIS Data].[dbo].[Engine_Location_Agg] WHERE [LastUpdate] = '" + datequeryStr + "'"
-                # ",[Rank] FROM [KIS Data].[dbo].[Engine_Location_Agg] WHERE [LastUpdate] = '2023-02-21'"
+                # ",[Rank] FROM [KIS Data].[dbo].[Engine_Location_Agg] WHERE [LastUpdate] = '2023-12-07'"
                 # " AND [SubDistrict] <> '' AND [District] <> '' AND [Province] <> '' AND [Country] <> '' AND [Hour] > 0"
                 # " AND [Rank] = 1"
                 )
@@ -160,6 +164,7 @@ def main():
         print(row['UserId'])
         body = {
         "to": row['UserId'],
+        # "to": 'U6033cf390924547c3a509fc418b7a0db',
         "messages": [
             {
             "type": "flex",
