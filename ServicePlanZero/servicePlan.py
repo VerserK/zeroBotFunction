@@ -25,7 +25,7 @@ def run():
     conn = engine.connect()
 
     qryCheckKISonVIN = sa.text("SELECT [EPC].[VIN],[EPC].[Next Date] "
-                                "FROM [ZEROSearchDB].[dbo].[Service_Plan] SP "
+                                "FROM [Service Data].[dbo].[Service_Plan] SP "
                                 "INNER JOIN [KIS Data].[dbo].[Engine_Periodical_Check] EPC ON [EPC].[VIN] = [SP].[VIN]"
                                 "WHERE [EPC].[Next Date] = '" + datequeryStr + "'"
                                 )
@@ -42,7 +42,7 @@ def run():
                         ",[Hours] "
                         ",[Next Date] as [Plan Date] "
                     "FROM [KIS Data].[dbo].[Engine_Periodical_Check] EPC "
-                    "INNER JOIN [ZEROSearchDB].[dbo].[Service_Plan] SP ON [SP].[VIN] = [EPC].[VIN] " 
+                    "INNER JOIN [Service Data].[dbo].[Service_Plan] SP ON [SP].[VIN] = [EPC].[VIN] " 
                     "WHERE [EPC].[Next Date] = '" + datequeryStr + "'"
                 )
         resultsetloc = conn.execute(query)
@@ -360,7 +360,7 @@ def run():
                     ",[Counter for Next Service] "
                     ",[VIN] "
                     ",[LV Main Type] "
-                "FROM [ZEROSearchDB].[dbo].[Service_Plan]" 
+                "FROM [Service Data].[dbo].[Service_Plan]" 
                 "WHERE [LV Main Type] NOT LIKE '%KIS' AND [Plan Date] = '" + datequeryStr + "'"
             )
     resultsetloc = conn.execute(query)
