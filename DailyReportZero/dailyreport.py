@@ -97,7 +97,7 @@ def main():
     datetimeThai = thai_strftime(datetime_obj, "%A %d %B %Y")
     datequeryStr = datetime_obj.strftime("%Y-%m-%d")
     Linetoken = 'HvSWl3gV8+hLK5/2xb8Fejzg5QxJRdvtZiHf5irm0RiMpD6h1Owlj15XpwdHX6bVbXtfktmgXCEc0WmYzk/i8lKxNNCRnmo78QPupI9CVqvUTPaPtrbETMzLZcE+AKiEBK4CP7BzcE9Y2jy1YEDjRwdB04t89/1O/w1cDnyilFU='
-    # datequeryStr = '2021-01-12'
+    # datequeryStr = '2024-03-25'
 
     ### Connect DB ####
     server = 'skcdwhprdmi.siamkubota.co.th'
@@ -182,7 +182,7 @@ def main():
                     "contents": [
                     {
                         "type": "icon",
-                        "url": "https://lh3.googleusercontent.com/drive-viewer/AFGJ81o_m4U7QHtGj2Kcbfky94KRBOoa8-ahtpmsD75fO4FUU5S2mPfirReb-Es939EKEL3i9BTSWGFgXZhZegSy45kV_u-b=s2560"
+                        "url": "https://dwhwebstorage.blob.core.windows.net/pic/calendar.png"
                     },
                     {
                         "type": "text",
@@ -233,7 +233,7 @@ def main():
                     "contents": [
                     {
                         "type": "icon",
-                        "url": "https://lh3.googleusercontent.com/drive-viewer/AFGJ81oCBsV9bpCziqunhs12VWwNDqcbl0bOgS4g8lW8_A7ZsJg-agKguPAiQuVVMNTvxUA0qA-t0zwAWmW3wyC3Ul-0B1oDvQ=s2560"
+                        "url": "https://dwhwebstorage.blob.core.windows.net/pic/180527_kubota-Icon-07.png"
                     },
                     {
                         "type": "text",
@@ -328,7 +328,7 @@ def main():
                     "contents": [
                     {
                         "type": "icon",
-                        "url": "https://lh3.googleusercontent.com/drive-viewer/AFGJ81oF0sakxdLuRxBQAAjdZhfEEYrnnQvCDi3kwaEW6hDJmQHDSjnVLVoAyGKGMpgDGIgCw4RCUMlrV67HE7KnYGkh6mF9qA=s2560",
+                        "url": "https://dwhwebstorage.blob.core.windows.net/pic/placeholder.png",
                         "size": "sm"
                     },
                     {
@@ -355,3 +355,6 @@ def main():
         ]
     }
         r = requests.post(url, headers=headers, json=body)
+        exit()
+
+main()
